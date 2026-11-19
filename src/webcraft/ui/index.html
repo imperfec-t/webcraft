@@ -1,0 +1,1511 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>webcraft</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f7f7f9; --surface: #ffffff; --surface-2: #f2f2f6; --surface-3: #eaeaf0;
+  --text: #15151c; --muted: #5c5c6c; --faint: #85859a;
+  --border: #e5e5ec; --border-strong: #d4d4de;
+  --accent: #5046e5; --accent-ink: #4338ca; --on-accent: #ffffff; --accent-soft: #eeedfd; --accent-line: #c9c6fa;
+  --ok: #137046; --ok-bg: #e4f5ec; --warn: #8a5600; --warn-bg: #fdf2d9; --bad: #b42318; --bad-bg: #fde9e7;
+  --info-bg: var(--accent-soft);
+  --shadow: 0 1px 2px rgb(16 16 24 / .04), 0 1px 1px rgb(16 16 24 / .02);
+  --shadow-md: 0 4px 16px rgb(16 16 24 / .06), 0 1px 3px rgb(16 16 24 / .05);
+  --shadow-lg: 0 24px 64px rgb(16 16 24 / .18), 0 4px 12px rgb(16 16 24 / .08);
+  --radius: 12px; --radius-sm: 8px; --radius-lg: 16px;
+  --font: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+  --side-w: 252px;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0e0e12; --surface: #15151b; --surface-2: #1c1c24; --surface-3: #24242e;
+  --text: #ececf2; --muted: #a3a3b5; --faint: #747488;
+  --border: #25252f; --border-strong: #33333f;
+  --accent: #8d8cf8; --accent-ink: #aaa9ff; --on-accent: #0e0e12; --accent-soft: #1e1d3b; --accent-line: #3b3a7a;
+  --ok: #5fd39a; --ok-bg: #102a1e; --warn: #f2c25b; --warn-bg: #2c2311; --bad: #ff8a7d; --bad-bg: #321613;
+  --shadow: 0 1px 2px rgb(0 0 0 / .4);
+  --shadow-md: 0 4px 16px rgb(0 0 0 / .35), 0 1px 3px rgb(0 0 0 / .4);
+  --shadow-lg: 0 24px 64px rgb(0 0 0 / .6), 0 4px 12px rgb(0 0 0 / .4);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e0e12; --surface: #15151b; --surface-2: #1c1c24; --surface-3: #24242e;
+    --text: #ececf2; --muted: #a3a3b5; --faint: #747488;
+    --border: #25252f; --border-strong: #33333f;
+    --accent: #8d8cf8; --accent-ink: #aaa9ff; --on-accent: #0e0e12; --accent-soft: #1e1d3b; --accent-line: #3b3a7a;
+    --ok: #5fd39a; --ok-bg: #102a1e; --warn: #f2c25b; --warn-bg: #2c2311; --bad: #ff8a7d; --bad-bg: #321613;
+    --shadow: 0 1px 2px rgb(0 0 0 / .4);
+    --shadow-md: 0 4px 16px rgb(0 0 0 / .35), 0 1px 3px rgb(0 0 0 / .4);
+    --shadow-lg: 0 24px 64px rgb(0 0 0 / .6), 0 4px 12px rgb(0 0 0 / .4);
+  }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: var(--bg); color: var(--text); font: 14.5px/1.55 var(--font); -webkit-font-smoothing: antialiased; font-feature-settings: "cv11", "ss01"; text-rendering: optimizeLegibility; }
+a { color: var(--accent-ink); text-underline-offset: 2px; }
+code, pre, .mono { font-family: var(--mono); font-size: 12.5px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+button, input, select, textarea { font: inherit; color: inherit; }
+::selection { background: var(--accent-line); }
+kbd { font-family: var(--mono); font-size: 11px; padding: 1px 5px; border-radius: 5px; border: 1px solid var(--border-strong); border-bottom-width: 2px; background: var(--surface); color: var(--muted); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ---------- shell ---------- */
+.app { display: grid; grid-template-columns: var(--side-w) minmax(0, 1fr); min-height: 100vh; }
+.side { position: sticky; top: 0; height: 100vh; border-right: 1px solid var(--border); background: var(--surface);
+  display: flex; flex-direction: column; padding: 14px 10px 12px; gap: 2px; overflow-y: auto; z-index: 20; }
+.brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 14px; text-decoration: none; color: inherit; }
+.brand-mark { width: 30px; height: 30px; border-radius: 9px; flex: none; display: grid; place-items: center;
+  background: linear-gradient(135deg, var(--accent), color-mix(in oklab, var(--accent) 55%, #ec4899)); color: #fff; box-shadow: var(--shadow-md); }
+.brand-mark svg { width: 17px; height: 17px; }
+.brand b { font-size: 15.5px; letter-spacing: -.015em; display: block; line-height: 1.2; }
+.brand small { display: block; color: var(--faint); font-size: 11.5px; }
+.cmd-btn { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 10px; margin: 0 0 10px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--bg); color: var(--faint); cursor: pointer; font-size: 13px; text-align: left; }
+.cmd-btn:hover { border-color: var(--border-strong); color: var(--muted); }
+.cmd-btn svg { width: 15px; height: 15px; }
+.cmd-btn kbd { margin-left: auto; }
+.nav-group { font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); padding: 14px 10px 6px; }
+.nav-btn { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px; border: 0; border-radius: var(--radius-sm);
+  background: none; cursor: pointer; text-align: left; color: var(--muted); font-weight: 500; font-size: 13.5px; position: relative; }
+.nav-btn:hover { background: var(--surface-2); color: var(--text); }
+.nav-btn[aria-current="page"] { background: var(--accent-soft); color: var(--accent-ink); font-weight: 600; }
+.nav-btn svg { width: 17px; height: 17px; flex: none; opacity: .9; }
+.nav-btn .badge { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--faint); }
+.side-foot { margin-top: auto; padding: 12px 6px 2px; display: flex; flex-direction: column; gap: 10px; color: var(--faint); font-size: 11.5px; border-top: 1px solid var(--border); }
+.side-foot .privacy { display: flex; gap: 6px; align-items: flex-start; line-height: 1.45; }
+.side-foot .privacy svg { width: 14px; height: 14px; flex: none; margin-top: 1px; color: var(--ok); }
+
+.topbar { display: none; }
+.scrim { display: none; }
+
+main { padding: 28px clamp(16px, 3.2vw, 44px) 72px; min-width: 0; }
+.view { display: none; max-width: 1200px; margin: 0 auto; }
+.view.active { display: block; animation: viewin .25s ease both; }
+@keyframes viewin { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .view.active { animation: none; } }
+.view-head { display: flex; gap: 16px; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; margin-bottom: 18px; }
+.view-head .eyebrow { font-size: 12px; font-weight: 600; color: var(--accent-ink); letter-spacing: .02em; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.view-head h1 { margin: 0 0 6px; font-size: 26px; line-height: 1.15; letter-spacing: -.025em; font-weight: 700; outline: none; }
+.view-head p { margin: 0; color: var(--muted); max-width: 72ch; }
+.view-head .head-actions { display: flex; gap: 8px; }
+
+/* ---------- help panel ---------- */
+details.help { margin: 0 0 18px; border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
+details.help > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 11px 16px; font-weight: 600; font-size: 13.5px; color: var(--text); }
+details.help > summary::-webkit-details-marker { display: none; }
+details.help > summary .ico { width: 22px; height: 22px; border-radius: 6px; background: var(--accent-soft); color: var(--accent-ink); display: grid; place-items: center; flex: none; }
+details.help > summary .ico svg { width: 14px; height: 14px; }
+details.help > summary .hint { color: var(--faint); font-weight: 400; font-size: 12.5px; }
+details.help > summary .chev { margin-left: auto; width: 16px; height: 16px; color: var(--faint); transition: transform .2s; }
+details.help[open] > summary .chev { transform: rotate(180deg); }
+.help-body { padding: 4px 16px 16px; border-top: 1px solid var(--border); }
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 14px; margin: 14px 0; counter-reset: step; }
+.step { position: relative; padding: 14px; border-radius: var(--radius-sm); background: var(--surface-2); }
+.step::before { counter-increment: step; content: counter(step); position: absolute; top: 12px; right: 12px; font: 600 11px var(--mono); color: var(--faint); }
+.step .s-ico { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--border); color: var(--accent-ink); margin-bottom: 10px; }
+.step .s-ico svg { width: 16px; height: 16px; }
+.step b { display: block; font-size: 13.5px; margin-bottom: 3px; }
+.step span { color: var(--muted); font-size: 12.5px; line-height: 1.5; display: block; }
+.alt-ways { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 10px; }
+.alt-ways > div { border: 1px dashed var(--border-strong); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 12.5px; color: var(--muted); }
+.alt-ways code { display: block; margin-top: 4px; color: var(--text); overflow-wrap: anywhere; }
+
+/* ---------- primitives ---------- */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; }
+.card + .card { margin-top: 16px; }
+.card h2 { margin: 0 0 14px; font-size: 14.5px; letter-spacing: -.01em; font-weight: 650; }
+.card h2 .sub { color: var(--faint); font-weight: 400; margin-left: 6px; font-size: 13px; }
+.grid-2 { display: grid; gap: 16px; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); align-items: start; }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.row > .grow { flex: 1 1 240px; min-width: 0; }
+.sticky-col { position: sticky; top: 20px; }
+
+label.field { display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--text); }
+label.field span.hint { font-weight: 400; color: var(--faint); }
+input[type=text], input[type=number], input[type=search], select, textarea {
+  width: 100%; padding: 8px 11px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface);
+  transition: border-color .15s, box-shadow .15s; font-size: 13.5px; }
+input:hover, select:hover, textarea:hover { border-color: var(--faint); }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+input::placeholder, textarea::placeholder { color: var(--faint); }
+textarea { min-height: 120px; resize: vertical; font-family: var(--mono); font-size: 12.5px; line-height: 1.55; }
+input[type=color] { width: 42px; height: 38px; padding: 3px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer; flex: none; }
+.check { display: inline-flex; align-items: flex-start; gap: 8px; font-size: 13.5px; cursor: pointer; line-height: 1.45; }
+.check input { width: 16px; height: 16px; margin: 2px 0 0; flex: none; accent-color: var(--accent); }
+.search-wrap { position: relative; }
+.search-wrap svg { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--faint); pointer-events: none; }
+.search-wrap input { padding-left: 33px; }
+
+.seg { display: inline-flex; padding: 3px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; gap: 2px; flex-wrap: wrap; }
+.seg button { border: 0; background: none; padding: 5px 11px; border-radius: 7px; cursor: pointer; color: var(--muted); font-size: 12.5px; font-weight: 550; }
+.seg button:hover { color: var(--text); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-md); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 8px 15px; border-radius: var(--radius-sm); font-size: 13.5px;
+  border: 1px solid transparent; background: var(--accent); color: var(--on-accent); font-weight: 600; cursor: pointer; white-space: nowrap;
+  box-shadow: 0 1px 2px rgb(16 16 24 / .12), inset 0 1px 0 rgb(255 255 255 / .12); transition: filter .15s, background .15s, border-color .15s, transform .05s; text-decoration: none; }
+.btn:hover { filter: brightness(1.07); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: .55; cursor: progress; }
+.btn svg { width: 15px; height: 15px; }
+.btn.ghost { background: var(--surface); color: var(--text); border-color: var(--border-strong); box-shadow: var(--shadow); }
+.btn.ghost:hover { background: var(--surface-2); filter: none; }
+.btn.small { padding: 5px 10px; font-size: 12.5px; }
+.btn.lg { padding: 10px 18px; font-size: 14.5px; }
+.btn.danger { background: var(--bad); color: #fff; }
+
+.pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; line-height: 1.6; }
+.pill.ok { background: var(--ok-bg); color: var(--ok); }
+.pill.warn { background: var(--warn-bg); color: var(--warn); }
+.pill.bad { background: var(--bad-bg); color: var(--bad); }
+.pill.info { background: var(--accent-soft); color: var(--accent-ink); }
+.pill.plain { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+
+.empty { color: var(--muted); padding: 36px 24px; text-align: center; border: 1px dashed var(--border-strong); border-radius: var(--radius); background: var(--surface); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.empty svg.ill { width: 96px; height: 72px; color: var(--faint); }
+.empty b { color: var(--text); font-size: 14px; }
+.error { background: var(--bad-bg); color: var(--bad); padding: 12px 14px; border-radius: var(--radius-sm); font-weight: 500; overflow-wrap: anywhere; display: flex; gap: 8px; align-items: flex-start; }
+.spinner { width: 15px; height: 15px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .7s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.skel { background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%); background-size: 200% 100%; animation: shimmer 1.3s linear infinite; border-radius: 8px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } .skel { animation: none; } }
+.loading-note { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+
+pre.code { margin: 0; padding: 14px 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: auto; max-height: 460px; white-space: pre; line-height: 1.55; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tbl th, .tbl td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tbl tbody tr:hover td { background: var(--surface-2); }
+.tbl th { color: var(--faint); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+.tbl-wrap { overflow-x: auto; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 12px; flex-wrap: wrap; }
+.tabs button { border: 0; background: none; padding: 8px 12px; cursor: pointer; color: var(--muted); font-weight: 600; font-size: 12.5px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button:hover { color: var(--text); }
+.tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+
+/* ---------- overview ---------- */
+.ov-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 28px; align-items: center; padding: 30px; border-radius: var(--radius-lg);
+  border: 1px solid var(--border); box-shadow: var(--shadow); overflow: hidden; position: relative;
+  background: radial-gradient(120% 120% at 100% 0%, var(--accent-soft) 0%, transparent 55%), var(--surface); }
+.ov-hero h1 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.08; letter-spacing: -.035em; margin: 8px 0 12px; font-weight: 750; outline: none; }
+.ov-hero h1 em { font-style: normal; background: linear-gradient(90deg, var(--accent), color-mix(in oklab, var(--accent) 50%, #ec4899)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.ov-hero p.lede { color: var(--muted); font-size: 15.5px; max-width: 52ch; margin: 0 0 20px; }
+.ov-hero .agents { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+.ov-hero .agents span { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+.ov-hero svg.hero-ill { width: 100%; height: auto; display: block; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; margin: 16px 0 0; }
+.stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 6px; text-align: left; cursor: pointer; }
+.stat:hover { border-color: var(--accent-line); box-shadow: var(--shadow-md); }
+.stat .s-top { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12.5px; font-weight: 600; }
+.stat .s-top svg { width: 16px; height: 16px; color: var(--accent-ink); }
+.stat .s-val { font-size: 26px; font-weight: 750; letter-spacing: -.03em; line-height: 1.1; }
+.stat .s-sub { font-size: 12.5px; color: var(--faint); }
+.section-title { display: flex; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin: 34px 0 14px; flex-wrap: wrap; }
+.section-title h2 { white-space: nowrap; }
+.section-title h2 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+.section-title p { margin: 0; color: var(--muted); font-size: 13.5px; }
+.diagram { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow); }
+.diagram svg { width: 100%; height: auto; display: block; }
+.diagram-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 12px; margin-top: 16px; }
+.diagram-legend div { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); font-size: 12.5px; color: var(--muted); }
+.diagram-legend b { display: block; color: var(--text); font-size: 13.5px; margin-bottom: 3px; }
+.timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; position: relative; }
+.timeline::before { content: ""; position: absolute; top: 22px; left: 10%; right: 10%; height: 2px; background: linear-gradient(90deg, var(--accent-line), var(--accent), var(--accent-line)); }
+.tl-step { position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 8px; }
+.tl-step .dot { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--surface); border: 2px solid var(--accent); color: var(--accent-ink); z-index: 1; box-shadow: 0 0 0 6px var(--bg); }
+.tl-step .dot svg { width: 19px; height: 19px; }
+.tl-step > div:last-child { display: flex; flex-direction: column; align-items: center; }
+.tl-step b { margin-top: 12px; font-size: 14px; }
+.tl-step span { color: var(--muted); font-size: 12.5px; margin: 4px 0 8px; line-height: 1.45; }
+.tl-step button { font-size: 12px; }
+.chat { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.chat-win { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); }
+.chat-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--surface-2); font-size: 12px; color: var(--faint); }
+.chat-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--border-strong); display: inline-block; }
+.chat-body { padding: 16px; display: flex; flex-direction: column; gap: 10px; font-size: 13px; }
+.msg { max-width: 88%; padding: 10px 12px; border-radius: 12px; line-height: 1.5; }
+.msg.user { align-self: flex-end; background: var(--accent); color: var(--on-accent); border-bottom-right-radius: 4px; }
+.msg.ai { align-self: flex-start; background: var(--surface-2); border-bottom-left-radius: 4px; }
+.tool-call { align-self: flex-start; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11.5px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); }
+.tool-call svg { width: 13px; height: 13px; color: var(--accent-ink); }
+.tool-call .res { color: var(--ok); }
+.tool-call .res.w { color: var(--warn); }
+.explain-list { display: flex; flex-direction: column; gap: 10px; }
+.explain-list .ex { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); }
+.explain-list .ex .n { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-ink); font-size: 12px; font-weight: 700; display: grid; place-items: center; }
+.explain-list .ex b { display: block; font-size: 13.5px; }
+.explain-list .ex span { color: var(--muted); font-size: 12.5px; }
+.paths { font-size: 13px; }
+.paths td:first-child { color: var(--muted); white-space: nowrap; width: 1%; }
+.paths code { overflow-wrap: anywhere; }
+
+/* ---------- command palette ---------- */
+dialog.palette { padding: 0; border: 1px solid var(--border-strong); border-radius: 14px; width: min(620px, calc(100vw - 32px)); background: var(--surface); color: var(--text); box-shadow: var(--shadow-lg); margin-top: 12vh; }
+dialog.palette::backdrop { background: rgb(10 10 16 / .45); backdrop-filter: blur(2px); }
+.pal-input { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.pal-input svg { width: 17px; height: 17px; color: var(--faint); flex: none; }
+.pal-input input { border: 0 !important; box-shadow: none !important; padding: 4px 0; font-size: 15px; background: transparent; }
+.pal-list { max-height: min(420px, 60vh); overflow-y: auto; padding: 6px; margin: 0; list-style: none; }
+.pal-list .grp { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--faint); padding: 10px 10px 4px; }
+.pal-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; cursor: pointer; font-size: 13.5px; }
+.pal-item svg { width: 16px; height: 16px; color: var(--muted); flex: none; }
+.pal-item .d { color: var(--faint); font-size: 12px; margin-left: auto; }
+.pal-item[aria-selected="true"] { background: var(--accent-soft); color: var(--accent-ink); }
+.pal-item[aria-selected="true"] svg { color: var(--accent-ink); }
+.pal-foot { display: flex; gap: 14px; padding: 9px 16px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--faint); }
+
+
+/* ---------- illustrations ---------- */
+.ill .f-surface { fill: var(--surface); } .ill .f-s2 { fill: var(--surface-2); } .ill .f-s3 { fill: var(--surface-3); } .ill .f-bg { fill: var(--bg); }
+.ill .f-text { fill: var(--text); } .ill .f-muted { fill: var(--muted); } .ill .f-faint { fill: var(--faint); } .ill .f-acc { fill: var(--accent); }
+.ill .f-softacc { fill: var(--accent-soft); } .ill .f-okbg { fill: var(--ok-bg); }
+.ill .s-border { stroke: var(--border-strong); stroke-width: 1.2; } .ill .s-acc { stroke: var(--accent); } .ill .s-acc-line { stroke: var(--accent-line); stroke-width: 1.5; }
+.ill .s-faint { stroke: var(--faint); } .ill .s-ok { stroke: var(--ok); } .ill .dash { stroke-dasharray: 6 5; }
+.ill .o5 { opacity: .5; } .ill .o6 { opacity: .65; } .ill .o8 { opacity: .85; }
+.ill .st-acc { stop-color: var(--accent); } .ill .st-pink { stop-color: #ec4899; }
+.ill .t-small { font: 500 12.5px var(--font); fill: var(--muted); } .ill .t-strong { font: 650 15px var(--font); fill: var(--text); }
+.ill .t-mono { font: 500 10.5px var(--mono); fill: var(--muted); } .ill .t-mono2 { font: 500 12px var(--mono); fill: var(--accent-ink); }
+.ill .t-ok { font: 700 12px var(--font); fill: var(--ok); } .ill .t-col { font: 700 11px var(--font); letter-spacing: .14em; fill: var(--faint); }
+.ill .t-chip { font: 600 12.5px var(--mono); fill: var(--text); } .ill .t-tiny { font: 500 11px var(--font); fill: var(--faint); }
+
+.ill .float-a, .ill .float-b, .ill .float-c { animation: floaty 7s ease-in-out infinite; }
+.ill .float-b { animation-delay: -2.3s; } .ill .float-c { animation-delay: -4.6s; }
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@media (prefers-reduced-motion: reduce) { .ill .float-a, .ill .float-b, .ill .float-c { animation: none; } }
+
+/* tokens */
+.swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.swatch { border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); cursor: pointer; text-align: left; padding: 0; }
+.swatch .chip { height: 54px; border-bottom: 1px solid var(--border); }
+.swatch .meta { padding: 8px 10px; font-size: 12px; }
+.swatch .meta b { display: block; font-family: var(--mono); font-size: 12px; }
+.swatch .meta span { color: var(--muted); font-family: var(--mono); }
+.preview { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: var(--p-bg); color: var(--p-text); font-family: var(--p-font-body); }
+.preview .p-nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; border-bottom: 1px solid var(--p-border); }
+.preview .p-logo { font-family: var(--p-font-display); font-weight: 700; font-size: 18px; letter-spacing: -.02em; }
+.preview .p-links { display: flex; gap: 16px; font-size: 14px; color: var(--p-muted); }
+.preview .p-hero { padding: 36px 22px 26px; }
+.preview .p-eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--p-muted); margin: 0 0 10px; }
+.preview h3.p-h { font-family: var(--p-font-display); font-size: clamp(28px, 4vw, 44px); line-height: 1.02; letter-spacing: -.03em; margin: 0 0 14px; max-width: 16ch; }
+.preview .p-lede { color: var(--p-muted); max-width: 52ch; margin: 0 0 20px; font-size: 16px; line-height: 1.6; }
+.preview .p-cta { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.preview .p-btn { background: var(--p-accent); color: var(--p-on-accent); padding: 11px 20px; border-radius: var(--p-radius-pill); font-weight: 600; font-size: 14px; border: 0; }
+.preview .p-link { color: var(--p-accent-ink); font-weight: 600; font-size: 14px; text-decoration: underline; text-underline-offset: 3px; }
+.preview .p-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; padding: 0 22px 26px; }
+.preview .p-card { background: var(--p-surface); border: 1px solid var(--p-border); border-radius: var(--p-radius); padding: 16px; box-shadow: var(--p-shadow); }
+.preview .p-card b { font-family: var(--p-font-display); display: block; margin-bottom: 6px; font-size: 16px; }
+.preview .p-card p { margin: 0; color: var(--p-muted); font-size: 13.5px; line-height: 1.55; }
+.preview .p-tag { display: inline-block; margin-top: 10px; font-size: 12px; padding: 2px 8px; border-radius: var(--p-radius-sm); background: var(--p-surface-2); color: var(--p-text); }
+
+/* design library */
+.ds-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 14px; }
+.ds-card { text-align: left; padding: 0; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); overflow: hidden; cursor: pointer; box-shadow: var(--shadow); display: flex; flex-direction: column; }
+.ds-card:hover { border-color: var(--accent); }
+.ds-hero { height: 112px; padding: 14px 16px; display: flex; flex-direction: column; justify-content: space-between; border-bottom: 1px solid var(--border); }
+.ds-hero .aa { font-size: 30px; font-weight: 700; letter-spacing: -.03em; line-height: 1; }
+.ds-hero .row { gap: 6px; }
+.ds-hero .btnp { padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.ds-hero .dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgb(127 127 127 / .35); }
+.ds-body { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.ds-body b { font-family: var(--mono); font-size: 13px; }
+.ds-body p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ds-notice { background: var(--warn-bg); color: var(--warn); padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; }
+
+/* prompts */
+.ph-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 10px; }
+.ph-grid label { font-size: 12px; font-weight: 600; display: flex; flex-direction: column; gap: 4px; color: var(--muted); }
+.ph-grid input { font-size: 13px; padding: 7px 9px; }
+pre.prompt-out { white-space: pre-wrap; max-height: 560px; }
+pre.prompt-out mark { background: var(--warn-bg); color: var(--warn); border-radius: 4px; padding: 0 2px; }
+
+/* contrast */
+.ratio-big { font-size: clamp(40px, 6vw, 64px); font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+.sample { border-radius: var(--radius); padding: 22px; border: 1px solid var(--border); }
+.sample .lg { font-size: 26px; font-weight: 700; letter-spacing: -.02em; margin: 0 0 8px; }
+.sample p { margin: 0; }
+
+/* audit */
+.verdict { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 18px; border-radius: var(--radius); }
+.verdict.ok { background: var(--ok-bg); color: var(--ok); }
+.verdict.warn { background: var(--warn-bg); color: var(--warn); }
+.verdict.bad { background: var(--bad-bg); color: var(--bad); }
+.verdict .v-title { font-size: 22px; font-weight: 800; letter-spacing: -.02em; }
+.verdict .v-sub { color: inherit; opacity: .85; font-size: 13px; }
+.counts { display: flex; gap: 8px; margin-left: auto; flex-wrap: wrap; }
+.finding { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 14px; background: var(--surface); }
+.finding + .finding { margin-top: 8px; }
+.finding .f-top { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 4px; }
+.finding .f-problem { font-weight: 600; }
+.finding .f-meta { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.finding .f-fix { margin-top: 6px; font-size: 14px; }
+.finding .f-fix::before { content: "Fix: "; font-weight: 600; }
+.finding details { margin-top: 6px; font-size: 13px; color: var(--muted); }
+.finding details li { overflow-wrap: anywhere; font-family: var(--mono); font-size: 12px; }
+.sev-group h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 18px 0 8px; }
+ul.plain { margin: 0; padding-left: 18px; }
+ul.plain li { margin: 4px 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* skills */
+.skill-list { display: flex; flex-direction: column; gap: 6px; }
+.skill-item { border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius-sm); padding: 10px 12px; text-align: left; cursor: pointer; }
+.skill-item:hover { background: var(--surface-2); }
+.skill-item[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.skill-item b { display: block; font-family: var(--mono); font-size: 13px; }
+.skill-item > span:last-child { color: var(--muted); font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.md { line-height: 1.65; overflow-wrap: break-word; }
+.md h1 { font-size: 24px; margin: 0 0 12px; letter-spacing: -.02em; }
+.md h2 { font-size: 18px; margin: 26px 0 10px; }
+.md h3 { font-size: 15px; margin: 20px 0 8px; }
+.md p { margin: 0 0 12px; }
+.md pre { margin: 0 0 14px; padding: 12px 14px; background: var(--surface-2); border-radius: var(--radius-sm); overflow: auto; }
+.md code { background: var(--surface-2); padding: 1px 5px; border-radius: 5px; }
+.md pre code { background: none; padding: 0; }
+.md table { border-collapse: collapse; margin: 0 0 14px; font-size: 13.5px; display: block; overflow-x: auto; }
+.md th, .md td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; vertical-align: top; }
+.md th { background: var(--surface-2); }
+.md ul, .md ol { margin: 0 0 12px; padding-left: 22px; }
+.md li { margin: 3px 0; }
+
+.toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--text); color: var(--bg);
+  padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; z-index: 10; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+@media (max-width: 1100px) {
+  .ov-hero { grid-template-columns: minmax(0, 1fr); }
+  .chat { grid-template-columns: minmax(0, 1fr); }
+  .timeline { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  .timeline::before { top: 10px; bottom: 10px; left: 21px; right: auto; width: 2px; height: auto; background: linear-gradient(180deg, var(--accent-line), var(--accent), var(--accent-line)); }
+  .tl-step { flex-direction: row; align-items: flex-start; text-align: left; gap: 14px; padding: 0; }
+  .tl-step > div { display: flex; flex-direction: column; align-items: flex-start; }
+  .tl-step b { margin-top: 2px; }
+}
+@media (max-width: 880px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .grid-2 { grid-template-columns: minmax(0, 1fr) !important; }
+  .sticky-col { position: static; }
+  .view-head p { max-width: none; }
+  .preview .p-links { display: none; }
+  .topbar { display: flex; position: sticky; top: 0; z-index: 15; align-items: center; gap: 8px; padding: 10px 14px;
+    background: color-mix(in oklab, var(--surface) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); }
+  .topbar .brand { padding: 0; margin-right: auto; }
+  .topbar .brand small { display: none; }
+  .icon-btn { width: 36px; height: 36px; display: grid; place-items: center; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--surface); cursor: pointer; color: var(--text); }
+  .icon-btn svg { width: 18px; height: 18px; }
+  .side { position: fixed; inset: 0 auto 0 0; width: min(300px, 86vw); transform: translateX(-102%); transition: transform .25s ease; box-shadow: var(--shadow-lg); }
+  .app.nav-open .side { transform: none; }
+  .app.nav-open .scrim { display: block; position: fixed; inset: 0; background: rgb(10 10 16 / .4); z-index: 19; }
+  main { padding: 20px 16px 56px; }
+  .ov-hero { padding: 22px; }
+}
+@media (prefers-reduced-motion: reduce) { .side { transition: none; } }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <header class="topbar">
+    <button class="icon-btn" id="nav-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="side"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <a class="brand" href="#overview"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l4 12 5-9 5 9 4-12"/></svg></span><span><b>webcraft</b></span></a>
+    <button class="icon-btn" data-open-palette aria-label="Search and commands"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+  </header>
+  <div class="scrim" id="scrim"></div>
+  <nav class="side" id="side" aria-label="Main">
+    <a class="brand" href="#overview"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l4 12 5-9 5 9 4-12"/></svg></span><span><b>webcraft</b><small id="ver">Website skills &amp; checks</small></span></a>
+    <button class="cmd-btn" data-open-palette><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Search or jump to…</span><kbd>Ctrl K</kbd></button>
+    <button class="nav-btn" data-view="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg><span>Overview</span></button>
+    <div class="nav-group">Design</div>
+    <button class="nav-btn" data-view="tokens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="8.5" cy="10" r="1.4" fill="currentColor"/><circle cx="12" cy="7.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="10" r="1.4" fill="currentColor"/><path d="M12 21a3 3 0 0 1 0-6h1.5"/></svg><span>Tokens</span></button>
+    <button class="nav-btn" data-view="designs"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span>Design library</span><span class="badge" id="badge-designs"></span></button>
+    <button class="nav-btn" data-view="contrast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor"/></svg><span>Contrast</span></button>
+    <div class="nav-group">Build</div>
+    <button class="nav-btn" data-view="prompts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M4 12h10M4 18h7"/><path d="M17 15l3 3-3 3"/></svg><span>Prompts</span><span class="badge" id="badge-prompts"></span></button>
+    <button class="nav-btn" data-view="skills"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M8 7h6"/></svg><span>Skills</span><span class="badge" id="badge-skills"></span></button>
+    <div class="nav-group">Check</div>
+    <button class="nav-btn" data-view="audit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/></svg><span>Launch audit</span></button>
+    <button class="nav-btn" data-view="detect"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><path d="M7 7h.01M7 17h.01"/></svg><span>Detect stack</span></button>
+    <button class="nav-btn" data-view="teardown"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 9v12"/></svg><span>Teardown</span></button>
+    <div class="nav-group">Connect</div>
+    <button class="nav-btn" data-view="install"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg><span>Install &amp; MCP</span></button>
+    <div class="side-foot">
+      <div class="seg" role="group" aria-label="Theme" style="align-self:flex-start">
+        <button data-theme-btn="light" aria-pressed="false">Light</button>
+        <button data-theme-btn="auto" aria-pressed="true">Auto</button>
+        <button data-theme-btn="dark" aria-pressed="false">Dark</button>
+      </div>
+      <div class="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/></svg><span>Runs on this computer. Only sites you audit and the design library download touch the network.</span></div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- OVERVIEW -->
+    <section class="view" id="view-overview" aria-labelledby="h-overview">
+      <div class="ov-hero">
+        <div>
+          <span class="pill info">Open source · runs locally · works with any AI agent</span>
+          <h1 id="h-overview" tabindex="-1">Design, build and ship websites <em>with your AI agent</em>, measured, not guessed.</h1>
+          <p class="lede">webcraft gives coding agents expert website skills, then backs them with real checks: contrast-solved color systems, a pre-launch audit, a library of design references and ready-to-fill build prompts.</p>
+          <div class="row">
+            <button class="btn lg" data-go="tokens"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Start with a brand color</button>
+            <button class="btn ghost lg" data-go="audit">Audit a website</button>
+          </div>
+          <div class="agents" aria-label="Works with"><span>Claude Code</span><span>OpenAI Codex</span><span>Gemini CLI</span><span>GitHub Copilot</span><span>Cursor</span><span>Windsurf</span><span>any MCP client</span></div>
+        </div>
+        <svg class="hero-ill ill" viewBox="0 0 520 380" role="img" aria-label="Illustration: a website mockup with a generated color palette, an AI agent calling webcraft tools, and an audit result marked ready">
+          <defs>
+            <linearGradient id="g-acc" x1="0" x2="1"><stop offset="0" class="st-acc"/><stop offset="1" class="st-pink"/></linearGradient>
+            <filter id="sh" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="8" stdDeviation="9" flood-color="#101018" flood-opacity=".14"/></filter>
+          </defs>
+          <!-- browser -->
+          <rect x="40" y="36" width="380" height="280" rx="16" class="f-surface s-border"/>
+          <rect x="40" y="36" width="380" height="34" rx="16" class="f-s2"/><rect x="40" y="56" width="380" height="14" class="f-s2"/>
+          <circle cx="62" cy="53" r="5" class="f-s3"/><circle cx="78" cy="53" r="5" class="f-s3"/><circle cx="94" cy="53" r="5" class="f-s3"/>
+          <rect x="120" y="46" width="200" height="14" rx="7" class="f-surface"/>
+          <rect x="64" y="90" width="60" height="9" rx="4" class="f-text o6"/><rect x="300" y="90" width="34" height="8" rx="4" class="f-muted o5"/><rect x="342" y="90" width="34" height="8" rx="4" class="f-muted o5"/>
+          <rect x="64" y="124" width="210" height="18" rx="5" class="f-text"/><rect x="64" y="150" width="160" height="18" rx="5" class="f-text"/>
+          <rect x="64" y="182" width="230" height="8" rx="4" class="f-muted o5"/><rect x="64" y="196" width="190" height="8" rx="4" class="f-muted o5"/>
+          <rect x="64" y="218" width="92" height="28" rx="14" fill="url(#g-acc)"/><rect x="168" y="226" width="64" height="9" rx="4" class="f-acc o8"/>
+          <rect x="64" y="264" width="104" height="36" rx="8" class="f-s2"/><rect x="178" y="264" width="104" height="36" rx="8" class="f-s2"/><rect x="292" y="264" width="104" height="36" rx="8" class="f-s2"/>
+          <!-- palette card -->
+          <g class="float-a">
+            <rect x="330" y="8" width="170" height="92" rx="14" class="f-surface s-border" filter="url(#sh)"/>
+            <text x="346" y="32" class="t-small">tokens.css</text><text x="484" y="32" text-anchor="end" class="t-ok">AA ✓</text>
+            <rect x="346" y="44" width="24" height="40" rx="6" class="f-bg s-border"/><rect x="376" y="44" width="24" height="40" rx="6" class="f-s3"/>
+            <rect x="406" y="44" width="24" height="40" rx="6" class="f-text"/><rect x="436" y="44" width="24" height="40" rx="6" class="f-muted"/>
+            <rect x="466" y="44" width="24" height="40" rx="6" fill="url(#g-acc)"/>
+          </g>
+          <!-- agent bubble -->
+          <g class="float-b">
+            <rect x="300" y="150" width="210" height="92" rx="14" class="f-surface s-border" filter="url(#sh)"/>
+            <circle cx="322" cy="174" r="10" fill="url(#g-acc)"/><text x="340" y="178" class="t-small">AI agent</text>
+            <rect x="316" y="192" width="178" height="18" rx="5" class="f-s2"/><text x="324" y="205" class="t-mono">→ get_design("linear.app")</text>
+            <rect x="316" y="214" width="178" height="18" rx="5" class="f-s2"/><text x="324" y="227" class="t-mono">→ audit_site("./dist")</text>
+          </g>
+          <!-- audit badge -->
+          <g class="float-c">
+            <rect x="8" y="290" width="200" height="74" rx="14" class="f-surface s-border" filter="url(#sh)"/>
+            <circle cx="36" cy="327" r="15" class="f-okbg"/><path d="M29 327l5 5 9-10" class="s-ok" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <text x="60" y="320" class="t-strong">Launch audit</text><text x="60" y="340" class="t-small">Ready · 0 blockers</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="stats" id="ov-stats">
+        <div class="stat skel" style="height:104px"></div><div class="stat skel" style="height:104px"></div><div class="stat skel" style="height:104px"></div><div class="stat skel" style="height:104px"></div>
+      </div>
+
+      <div class="section-title"><h2>How it works</h2><p>One engine, four ways in. Every surface calls the same code, so results always match.</p></div>
+      <div class="diagram">
+        <div style="overflow-x:auto"><svg class="ill" viewBox="0 0 1000 430" style="min-width:720px" role="img" aria-label="Diagram: you use the web UI or command line, your AI agent uses the MCP server and reads installed skills; all of them call the webcraft engine, which reads your website, the design library, prompts, and writes skills into agent folders">
+          <defs>
+            <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-acc"/></marker>
+            <marker id="arr-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-faint"/></marker>
+          </defs>
+          <text x="105" y="22" text-anchor="middle" class="t-col">WHO</text>
+          <text x="340" y="22" text-anchor="middle" class="t-col">HOW</text>
+          <text x="615" y="22" text-anchor="middle" class="t-col">ENGINE</text>
+          <text x="890" y="22" text-anchor="middle" class="t-col">DATA</text>
+          <!-- who -->
+          <rect x="20" y="62" width="170" height="104" rx="14" class="f-s2 s-border"/>
+          <circle cx="54" cy="96" r="14" class="f-softacc"/><path d="M48 101a6 6 0 0 1 12 0M54 92a3.5 3.5 0 1 0 0-.1" class="s-acc" fill="none" stroke-width="2"/>
+          <text x="76" y="100" class="t-strong">You</text><text x="36" y="130" class="t-small">click in the browser</text><text x="36" y="148" class="t-small">or type in a terminal</text>
+          <rect x="20" y="248" width="170" height="122" rx="14" class="f-s2 s-border"/>
+          <circle cx="54" cy="282" r="14" fill="url(#g-acc2)"/><text x="76" y="287" class="t-strong">AI agent</text>
+          <text x="36" y="316" class="t-small">Claude Code, Codex,</text><text x="36" y="334" class="t-small">Gemini, Copilot, Cursor…</text><text x="36" y="352" class="t-small">builds what you ask</text>
+          <defs><linearGradient id="g-acc2" x1="0" x2="1"><stop offset="0" class="st-acc"/><stop offset="1" class="st-pink"/></linearGradient></defs>
+          <!-- how -->
+          <g class="t-box">
+            <rect x="250" y="40" width="180" height="66" rx="12" class="f-surface s-acc-line"/><text x="268" y="68" class="t-strong">Web UI</text><text x="268" y="88" class="t-mono2">webcraft ui</text>
+            <rect x="250" y="122" width="180" height="66" rx="12" class="f-surface s-acc-line"/><text x="268" y="150" class="t-strong">Command line</text><text x="268" y="170" class="t-mono2">webcraft audit …</text>
+            <rect x="250" y="240" width="180" height="66" rx="12" class="f-surface s-acc-line"/><text x="268" y="268" class="t-strong">MCP server</text><text x="268" y="288" class="t-mono2">webcraft mcp</text>
+            <rect x="250" y="322" width="180" height="66" rx="12" class="f-surface s-border dash"/><text x="268" y="350" class="t-strong">Skills</text><text x="268" y="370" class="t-mono2">SKILL.md × 10</text>
+          </g>
+          <path d="M190 100 C 220 100, 220 73, 248 73" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M190 128 C 220 128, 220 155, 248 155" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M190 290 C 220 290, 220 273, 248 273" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M248 355 C 220 355, 220 335, 192 335" class="s-faint" fill="none" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arr-m)"/>
+          <text x="105" y="392" text-anchor="middle" class="t-tiny">the agent reads the</text><text x="105" y="406" text-anchor="middle" class="t-tiny">skill that matches</text>
+          <!-- engine -->
+          <rect x="490" y="40" width="250" height="348" rx="16" class="f-softacc s-acc"/>
+          <text x="512" y="70" class="t-strong">webcraft engine</text><text x="512" y="89" class="t-small">Python · no dependencies</text>
+          <g class="chips">
+            <rect x="512" y="104" width="100" height="30" rx="8" class="f-surface s-border"/><text x="562" y="124" text-anchor="middle" class="t-chip">tokens</text>
+            <rect x="618" y="104" width="100" height="30" rx="8" class="f-surface s-border"/><text x="668" y="124" text-anchor="middle" class="t-chip">contrast</text>
+            <rect x="512" y="142" width="100" height="30" rx="8" class="f-surface s-border"/><text x="562" y="162" text-anchor="middle" class="t-chip">audit</text>
+            <rect x="618" y="142" width="100" height="30" rx="8" class="f-surface s-border"/><text x="668" y="162" text-anchor="middle" class="t-chip">detect</text>
+            <rect x="512" y="180" width="100" height="30" rx="8" class="f-surface s-border"/><text x="562" y="200" text-anchor="middle" class="t-chip">teardown</text>
+            <rect x="618" y="180" width="100" height="30" rx="8" class="f-surface s-border"/><text x="668" y="200" text-anchor="middle" class="t-chip">designs</text>
+            <rect x="512" y="218" width="100" height="30" rx="8" class="f-surface s-border"/><text x="562" y="238" text-anchor="middle" class="t-chip">prompts</text>
+            <rect x="618" y="218" width="100" height="30" rx="8" class="f-surface s-border"/><text x="668" y="238" text-anchor="middle" class="t-chip">installer</text>
+          </g>
+          <text x="512" y="282" class="t-small">Measures what an AI should</text><text x="512" y="300" class="t-small">not guess: contrast ratios,</text>
+          <text x="512" y="318" class="t-small">markup rules, fingerprints,</text><text x="512" y="336" class="t-small">file locations per agent.</text>
+          <path d="M432 73 C 460 73, 460 120, 488 120" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M432 155 C 460 155, 460 170, 488 170" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M432 273 C 460 273, 460 230, 488 230" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <!-- data -->
+          <rect x="800" y="40" width="180" height="70" rx="12" class="f-s2 s-border"/><text x="816" y="68" class="t-strong">Your website</text><text x="816" y="88" class="t-small">URL, file or folder</text>
+          <rect x="800" y="124" width="180" height="70" rx="12" class="f-s2 s-border"/><text x="816" y="152" class="t-strong">Design library</text><text x="816" y="172" class="t-small">84 DESIGN.md · GitHub</text>
+          <rect x="800" y="208" width="180" height="70" rx="12" class="f-s2 s-border"/><text x="816" y="236" class="t-strong">Prompts</text><text x="816" y="256" class="t-small">13 built-in + yours</text>
+          <rect x="800" y="292" width="180" height="70" rx="12" class="f-s2 s-border"/><text x="816" y="320" class="t-strong">Agent folders</text><text x="816" y="340" class="t-small">.claude · .agents · .cursor</text>
+          <path d="M742 110 L 798 76" class="s-faint" fill="none" stroke-width="2" marker-start="url(#arr-m)" marker-end="url(#arr-m)"/>
+          <path d="M742 170 L 798 160" class="s-faint" fill="none" stroke-width="2" marker-start="url(#arr-m)" marker-end="url(#arr-m)"/>
+          <path d="M742 232 L 798 242" class="s-faint" fill="none" stroke-width="2" marker-start="url(#arr-m)" marker-end="url(#arr-m)"/>
+          <path d="M742 300 L 798 324" class="s-faint" fill="none" stroke-width="2" marker-end="url(#arr-m)"/>
+          <path d="M890 362 C 890 410, 340 420, 340 392" class="s-faint" fill="none" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arr-m)"/>
+          <text x="600" y="418" text-anchor="middle" class="t-tiny">the installer copies skills into each agent's folder</text>
+        </svg></div>
+        <div class="diagram-legend">
+          <div><b>1 · Skills teach</b>Ten instruction files tell your agent how experts plan a homepage, pick colors, animate, and run QA. Installed once per agent.</div>
+          <div><b>2 · Tools measure</b>The engine does the parts an AI gets wrong: contrast math, markup audits, stack fingerprints, file paths.</div>
+          <div><b>3 · Libraries inspire</b>84 DESIGN.md references and 13 build prompts give a starting direction, plus your own private prompts.</div>
+          <div><b>4 · Same results everywhere</b>Click it here, type it in a terminal, or let the agent call it over MCP. It is one engine.</div>
+        </div>
+      </div>
+
+      <div class="section-title"><h2>A typical project</h2><p>Follow the stages in order; each ends with its own check.</p></div>
+      <div class="card"><div class="timeline">
+        <div class="tl-step"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></div><div><b>Plan</b><span>Section order from the visitor's questions (homepage-blueprint skill).</span><button class="btn ghost small" data-go="skills" data-skill="homepage-blueprint">Read skill</button></div></div>
+        <div class="tl-step"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor"/></svg></div><div><b>Look</b><span>Generate tokens from a brand color, or pick a reference design.</span><button class="btn ghost small" data-go="tokens">Open tokens</button></div></div>
+        <div class="tl-step"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13 5l-2 14"/></svg></div><div><b>Build</b><span>Fill a prompt and let your agent build with the skills installed.</span><button class="btn ghost small" data-go="prompts">Open prompts</button></div></div>
+        <div class="tl-step"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l2 2 4-4"/><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/></svg></div><div><b>Check</b><span>Contrast and a launch audit: blockers first, with fixes.</span><button class="btn ghost small" data-go="audit">Run audit</button></div></div>
+        <div class="tl-step"><div class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12l5 5L20 7"/></svg></div><div><b>Ship</b><span>Hand off with the verdict and what still needs real content.</span><button class="btn ghost small" data-go="install">Set up agents</button></div></div>
+      </div></div>
+
+      <div class="section-title"><h2>What happens when you ask your agent</h2><p>With the skills installed and the MCP server connected.</p></div>
+      <div class="chat">
+        <div class="chat-win">
+          <div class="chat-bar"><i></i><i></i><i></i><span style="margin-left:8px">Claude Code · bakery-site</span></div>
+          <div class="chat-body">
+            <div class="msg user">Build a homepage for my bakery "Crumb &amp; Co" in a calm style like Linear, warm orange brand color.</div>
+            <div class="msg ai">I'll plan the sections first, then base the visual system on Linear's design language with your color.</div>
+            <div class="tool-call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/></svg>skill · homepage-blueprint, design-md</div>
+            <div class="tool-call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l-5 5 5 5"/></svg>get_design("linear.app", check) <span class="res w">1 pair below AA</span></div>
+            <div class="tool-call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l-5 5 5 5"/></svg>generate_tokens("#e8732a", editorial) <span class="res">all pass</span></div>
+            <div class="msg ai">Built 8 sections with tokens.css. Kept Linear's density and hairlines, not its name, logo or fonts.</div>
+            <div class="tool-call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 7l-5 5 5 5"/></svg>audit_site("./dist") <span class="res">Ready · 0 blockers</span></div>
+          </div>
+        </div>
+        <div class="explain-list">
+          <div class="ex"><span class="n">1</span><div><b>The agent picks skills by description</b><span>Only skill descriptions sit in its context. "Homepage" and "like Linear" match homepage-blueprint and design-md, so it reads those in full.</span></div></div>
+          <div class="ex"><span class="n">2</span><div><b>It calls webcraft for facts</b><span>get_design returns Linear's palette, type and spacing, and flags a contrast problem in the original so it isn't copied.</span></div></div>
+          <div class="ex"><span class="n">3</span><div><b>Your brand replaces theirs</b><span>generate_tokens builds a full light and dark system from your orange, with every text pair solved to pass WCAG AA.</span></div></div>
+          <div class="ex"><span class="n">4</span><div><b>It checks before saying "done"</b><span>audit_site runs about 40 launch checks on the build. Blockers get fixed and anything it can't verify is listed for you.</span></div></div>
+        </div>
+      </div>
+
+      <div class="section-title"><h2>Where things live</h2><p>Everything stays on this computer.</p></div>
+      <div class="card"><div class="tbl-wrap"><table class="tbl paths" id="ov-paths"><tbody><tr><td colspan="2"><div class="skel" style="height:80px"></div></td></tr></tbody></table></div></div>
+    </section>
+
+    <!-- TOKENS -->
+    <section class="view" id="view-tokens" aria-labelledby="h-tokens">
+      <div class="view-head"><div><div class="eyebrow">Design</div><h1 id="h-tokens" tabindex="-1">Design tokens</h1><p>One brand color in, a full contrast-checked system out: light and dark palettes, a fluid type scale, spacing and one corner personality.</p></div></div>
+      <details class="help" data-help="tokens"></details>
+      <div class="grid-2">
+        <div class="card stack">
+          <label class="field">Brand color <span class="hint">any CSS color: hex, rgb(), hsl(), oklch()</span>
+            <div class="row"><input type="color" id="tk-picker" value="#e4572e" aria-label="Pick brand color"><input type="text" id="tk-brand" value="#e4572e" class="grow"></div>
+          </label>
+          <div class="field" style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Tone
+            <div class="seg" id="tk-tone" role="group" aria-label="Tone"></div></div>
+          <div class="row">
+            <label class="field grow">Base theme<select id="tk-base"><option value="light">Light</option><option value="dark">Dark</option></select></label>
+            <label class="field grow">Corners<select id="tk-radius"><option value="">By tone</option></select></label>
+          </div>
+          <label class="check"><input type="checkbox" id="tk-basestyles"> Include starter element styles</label>
+          <div class="row">
+            <span class="pill plain" id="tk-summary">-</span>
+          </div>
+          <div id="tk-notes" class="stack" style="gap:8px"></div>
+        </div>
+        <div class="stack">
+          <div class="card">
+            <div class="row" style="justify-content:space-between;margin-bottom:12px">
+              <h2 style="margin:0">Live preview</h2>
+              <div class="seg" role="group" aria-label="Preview theme"><button data-pv="light" aria-pressed="true">Light</button><button data-pv="dark" aria-pressed="false">Dark</button></div>
+            </div>
+            <div class="preview" id="tk-preview">
+              <div class="p-nav"><span class="p-logo">Northwind</span><span class="p-links"><span>Work</span><span>Services</span><span>Contact</span></span></div>
+              <div class="p-hero">
+                <p class="p-eyebrow">Design studio</p>
+                <h3 class="p-h">Brands and websites people remember</h3>
+                <p class="p-lede">Secondary text uses the muted token. It should stay readable on both the page background and cards.</p>
+                <div class="p-cta"><button class="p-btn" type="button">Plan your project</button><a class="p-link" href="#tokens">See our work</a></div>
+              </div>
+              <div class="p-cards">
+                <div class="p-card"><b>Identity</b><p>Cards sit on the surface token with a hairline border.</p><span class="p-tag">surface-2</span></div>
+                <div class="p-card"><b>Websites</b><p>Fast marketing sites with motion that explains.</p><span class="p-tag">surface-2</span></div>
+                <div class="p-card"><b>Campaigns</b><p>Launches across social, print and outdoor.</p><span class="p-tag">surface-2</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card"><h2>Palette <span class="sub">click a swatch to copy</span></h2><div class="swatches" id="tk-swatches"></div></div>
+          <div class="card"><h2>Contrast</h2><div class="tbl-wrap"><table class="tbl" id="tk-contrast"></table></div></div>
+          <div class="card">
+            <div class="row" style="justify-content:space-between">
+              <div class="tabs" role="tablist" id="tk-tabs" style="margin-bottom:0;border:0">
+                <button role="tab" data-out="css" aria-selected="true">tokens.css</button>
+                <button role="tab" data-out="theme_json" aria-selected="false">theme.json</button>
+                <button role="tab" data-out="dtcg" aria-selected="false">DTCG JSON</button>
+                <button role="tab" data-out="design_md" aria-selected="false">DESIGN.md</button>
+              </div>
+              <div class="row"><button class="btn ghost small" id="tk-copy">Copy</button><button class="btn small" id="tk-download">Download</button></div>
+            </div>
+            <pre class="code" id="tk-code" style="margin-top:12px"></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESIGN LIBRARY -->
+    <section class="view" id="view-designs" aria-labelledby="h-designs">
+      <div class="view-head"><div><div class="eyebrow">Design</div><h1 id="h-designs" tabindex="-1">Design library</h1><p>DESIGN.md files analyzing the visual language of real sites, from <a href="https://github.com/VoltAgent/awesome-design-md" target="_blank" rel="noopener noreferrer">VoltAgent/awesome-design-md</a> (MIT). Browse for a direction, check its contrast, convert it to tokens, or drop it into a project.</p></div></div>
+      <details class="help" data-help="designs"></details>
+      <div id="ds-status" class="card" style="display:none"></div>
+      <div id="ds-browse">
+        <div class="row" style="margin:16px 0">
+          <input type="text" id="ds-q" class="grow" placeholder="Search: fintech, editorial, developer, warm…" aria-label="Search designs">
+          <div class="seg" role="group" aria-label="Theme filter" id="ds-theme"><button data-th="" aria-pressed="true">All</button><button data-th="light" aria-pressed="false">Light</button><button data-th="dark" aria-pressed="false">Dark</button></div>
+        </div>
+        <div class="ds-grid" id="ds-grid"></div>
+      </div>
+      <div id="ds-detail" style="display:none"></div>
+    </section>
+
+    <!-- PROMPTS -->
+    <section class="view" id="view-prompts" aria-labelledby="h-prompts">
+      <div class="view-head"><div><div class="eyebrow">Build</div><h1 id="h-prompts" tabindex="-1">Prompts</h1><p>Ready-to-fill website prompts for Claude, Codex, Cursor, Lovable or any AI builder. webcraft's own library is MIT; <b>Mine</b> holds prompts you save yourself and never leaves this computer.</p></div></div>
+      <details class="help" data-help="prompts"></details>
+      <div class="row" style="margin-bottom:14px">
+        <div class="seg" role="group" aria-label="Library" id="pr-lib"><button data-lib="all" aria-pressed="true">All</button><button data-lib="webcraft" aria-pressed="false">webcraft</button><button data-lib="mine" aria-pressed="false">Mine</button></div>
+        <input type="text" id="pr-q" class="grow" placeholder="Search: hero, dashboard, 3D, fintech…" aria-label="Search prompts">
+        <select id="pr-cat" style="width:auto" aria-label="Category"><option value="">All categories</option></select>
+        <button class="btn" id="pr-new">+ Add prompt</button>
+      </div>
+      <div class="grid-2" style="grid-template-columns:minmax(0,320px) minmax(0,1fr)">
+        <div class="skill-list" id="pr-list"></div>
+        <div id="pr-detail"><div class="card"><div class="empty">Choose a prompt.</div></div></div>
+      </div>
+    </section>
+
+    <!-- CONTRAST -->
+    <section class="view" id="view-contrast" aria-labelledby="h-contrast">
+      <div class="view-head"><div><div class="eyebrow">Design</div><h1 id="h-contrast" tabindex="-1">Contrast checker</h1><p>WCAG 2.x ratio for any two CSS colors, or every role pair in a token stylesheet.</p></div></div>
+      <details class="help" data-help="contrast"></details>
+      <div class="grid-2">
+        <div class="card stack">
+          <label class="field">Text color<div class="row"><input type="color" id="ct-fg-pick" value="#5d5d6b" aria-label="Pick text color"><input type="text" id="ct-fg" value="#5d5d6b" class="grow"></div></label>
+          <label class="field">Background<div class="row"><input type="color" id="ct-bg-pick" value="#ffffff" aria-label="Pick background color"><input type="text" id="ct-bg" value="#ffffff" class="grow"></div></label>
+          <button class="btn ghost" id="ct-swap" type="button">Swap colors</button>
+        </div>
+        <div class="card stack" id="ct-result">
+          <div class="row" style="align-items:flex-end;gap:16px"><div class="ratio-big" id="ct-ratio">-</div><div class="chips" id="ct-levels"></div></div>
+          <div class="sample" id="ct-sample"><p class="lg">Large heading text</p><p>Body text at normal size. Readers with low vision rely on this ratio more than anyone.</p></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <h2>Check a token stylesheet <span class="sub">paste CSS with --bg, --text, --muted, --accent…</span></h2>
+        <textarea id="ct-css" placeholder=":root { --bg: #ffffff; --text: #1b1b1f; --muted: #6b6b76; --accent: #4f46e5; --on-accent: #fff; }"></textarea>
+        <div class="row" style="margin-top:10px"><button class="btn" id="ct-css-run">Check pairs</button></div>
+        <div id="ct-css-out" style="margin-top:14px"></div>
+      </div>
+    </section>
+
+    <!-- AUDIT -->
+    <section class="view" id="view-audit" aria-labelledby="h-audit">
+      <div class="view-head"><div><div class="eyebrow">Check</div><h1 id="h-audit" tabindex="-1">Launch audit</h1><p>Pre-launch QA ranked blocker, should fix and polish. Anything a static check cannot see is listed under Not checked, never marked passed.</p></div></div>
+      <details class="help" data-help="audit"></details>
+      <div class="card stack">
+        <div class="row">
+          <label class="field grow">Website URL, HTML file or site folder<input type="text" id="au-target" placeholder="https://example.com  or  C:\sites\my-site\dist"></label>
+          <label class="field" style="width:110px">Pages<input type="number" id="au-pages" min="1" max="50" value="1"></label>
+        </div>
+        <div class="row">
+          <button class="btn" id="au-run">Run audit</button>
+          <button class="btn ghost" id="au-sample" type="button">Try the sample site</button>
+          <label class="check"><input type="checkbox" id="au-offline"> Skip network checks (robots, sitemap, links)</label>
+        </div>
+      </div>
+      <div id="au-out" style="margin-top:16px"><div class="empty">Results appear here. Live sites take 10 to 40 seconds.</div></div>
+    </section>
+
+    <!-- DETECT -->
+    <section class="view" id="view-detect" aria-labelledby="h-detect">
+      <div class="view-head"><div><div class="eyebrow">Check</div><h1 id="h-detect" tabindex="-1">Detect stack</h1><p>CMS, framework, motion libraries with versions, sliders, fonts, analytics and palette, from markup and same-origin assets.</p></div></div>
+      <details class="help" data-help="detect"></details>
+      <div class="card"><div class="row">
+        <label class="field grow">Website URL, HTML file or site folder<input type="text" id="dt-target" placeholder="https://gsap.com"></label>
+      </div><div class="row" style="margin-top:12px"><button class="btn" id="dt-run">Detect</button><button class="btn ghost" id="dt-sample" type="button">Try the sample site</button></div></div>
+      <div id="dt-out" style="margin-top:16px"><div class="empty">Results appear here.</div></div>
+    </section>
+
+    <!-- TEARDOWN -->
+    <section class="view" id="view-teardown" aria-labelledby="h-teardown">
+      <div class="view-head"><div><div class="eyebrow">Check</div><h1 id="h-teardown" tabindex="-1">Teardown brief</h1><p>A section-by-section rebuild brief. Copy, brand names and images become placeholders that keep their shape; layout and motion values are marked for you to verify.</p></div></div>
+      <details class="help" data-help="teardown"></details>
+      <div class="card"><div class="row">
+        <label class="field grow">Website URL or HTML file<input type="text" id="td-target" placeholder="https://example.com"></label>
+      </div><div class="row" style="margin-top:12px"><button class="btn" id="td-run">Draft brief</button><button class="btn ghost" id="td-sample" type="button">Try the sample site</button></div></div>
+      <div id="td-out" style="margin-top:16px"><div class="empty">The brief appears here.</div></div>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="view" id="view-skills" aria-labelledby="h-skills">
+      <div class="view-head"><div><div class="eyebrow">Build</div><h1 id="h-skills" tabindex="-1">Skills</h1><p>The instructions agents follow. Each one loads only when a task matches its description.</p></div></div>
+      <details class="help" data-help="skills"></details>
+      <div class="grid-2">
+        <div class="skill-list" id="sk-list"></div>
+        <div class="card"><div class="row" id="sk-files" style="margin-bottom:12px"></div><div class="md" id="sk-body"><div class="empty">Choose a skill.</div></div></div>
+      </div>
+    </section>
+
+    <!-- INSTALL -->
+    <section class="view" id="view-install" aria-labelledby="h-install">
+      <div class="view-head"><div><div class="eyebrow">Connect</div><h1 id="h-install" tabindex="-1">Install &amp; MCP</h1><p>Put the skills where each agent looks, and connect the tools as an MCP server. Preview always runs first; nothing is written until you press Install.</p></div></div>
+      <details class="help" data-help="install"></details>
+      <div class="grid-2">
+        <div class="card stack">
+          <h2 style="margin:0">Agents</h2>
+          <div class="stack" id="in-agents" style="gap:8px"></div>
+          <div class="field" style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Scope
+            <div class="seg" role="group" aria-label="Scope" id="in-scope"><button data-scope="user" aria-pressed="true">User (all projects)</button><button data-scope="project" aria-pressed="false">This project</button></div></div>
+          <label class="field">Project folder <span class="hint">used for project scope and for Cursor, Windsurf, AGENTS.md</span><input type="text" id="in-project"></label>
+          <details><summary style="cursor:pointer;font-weight:600;font-size:13px">Skills to install</summary><div class="stack" id="in-skills" style="gap:6px;margin-top:8px"></div></details>
+          <label class="check"><input type="checkbox" id="in-force"> Overwrite skill folders not installed by webcraft</label>
+          <div class="row"><button class="btn ghost" id="in-preview">Preview</button><button class="btn" id="in-go">Install</button></div>
+        </div>
+        <div class="stack">
+          <div class="card"><h2>Result</h2><div id="in-log"><div class="empty">Choose agents and press Preview.</div></div></div>
+          <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">Installed now</h2><button class="btn ghost small" id="in-refresh">Refresh</button></div><div class="tbl-wrap"><table class="tbl" id="in-status"></table></div></div>
+          <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">MCP server setup</h2>
+            <select id="mcp-client" style="width:auto"></select></div>
+            <pre class="code" id="mcp-out"></pre>
+            <div class="row" style="margin-top:10px"><button class="btn ghost small" id="mcp-copy">Copy</button></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<dialog class="palette" id="palette" aria-label="Search and commands">
+  <div class="pal-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+    <input type="text" id="pal-q" placeholder="Search pages, actions and skills…" aria-label="Search" role="combobox" aria-controls="pal-list" aria-expanded="true" autocomplete="off"></div>
+  <ul class="pal-list" id="pal-list" role="listbox"></ul>
+  <div class="pal-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> navigate</span><span><kbd>Enter</kbd> open</span><span><kbd>Esc</kbd> close</span><span style="margin-left:auto"><kbd>/</kbd> focus search on a page</span></div>
+</dialog>
+
+<script nonce="__NONCE__">
+"use strict";
+const TOKEN = "__WEBCRAFT_TOKEN__";
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+let META = null;
+
+async function api(name, body = {}) {
+  const r = await fetch("/api/" + name, { method: "POST", headers: { "Content-Type": "application/json", "X-Webcraft-Token": TOKEN }, body: JSON.stringify(body) });
+  let j;
+  try { j = await r.json(); } catch { throw new Error(`HTTP ${r.status}`); }
+  if (!j.ok) throw new Error(j.error || `HTTP ${r.status}`);
+  return j.data;
+}
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove("show"), 1600); }
+async function copy(text, label = "Copied") { try { await navigator.clipboard.writeText(text); toast(label); } catch { toast("Copy failed: select and copy manually"); } }
+function download(name, text, type = "text/plain") { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+function busy(btn, on, label) { if (on) { btn.dataset.label = btn.innerHTML; btn.disabled = true; btn.innerHTML = `<span class="spinner"></span>${esc(label || "Working")}`; } else { btn.disabled = false; if (btn.dataset.label) btn.innerHTML = btn.dataset.label; } }
+const errorBox = (e) => `<div class="error" role="alert"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" style="flex:none;margin-top:2px"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span>${esc(e.message || e)}</span></div>`;
+function skeleton(note, kind) {
+  const bar = (h, w = "100%") => `<div class="skel" style="height:${h}px;width:${w}"></div>`;
+  const body = kind === "audit"
+    ? `${bar(84)}<div class="grid-2" style="grid-template-columns:minmax(0,1fr) minmax(0,320px);margin-top:16px"><div class="stack">${bar(92)}${bar(92)}${bar(92)}</div><div class="stack">${bar(260)}</div></div>`
+    : `<div class="grid-2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)"><div class="stack">${bar(220)}</div><div class="stack">${bar(100)}${bar(110)}</div></div>`;
+  return `<div aria-busy="true"><div class="loading-note"><span class="spinner"></span>${esc(note)}</div>${body}</div>`;
+}
+const EMPTY_ILL = `<svg class="ill" viewBox="0 0 96 72" aria-hidden="true"><rect x="6" y="8" width="70" height="52" rx="8" class="f-s2 s-border"/><rect x="6" y="8" width="70" height="12" rx="6" class="f-s3"/><rect x="16" y="30" width="38" height="5" rx="2.5" class="f-faint o5"/><rect x="16" y="41" width="26" height="5" rx="2.5" class="f-faint o5"/><circle cx="70" cy="50" r="14" class="f-surface s-border"/><path d="M65 50l4 4 7-8" fill="none" class="s-acc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function emptyState(title, text) { return `<div class="empty">${EMPTY_ILL}<b>${esc(title)}</b><span>${esc(text)}</span></div>`; }
+const statusPill = (s) => ({ pass: `<span class="pill ok">Pass</span>`, warn: `<span class="pill warn">Below guideline</span>`, fail: `<span class="pill bad">Fail</span>` }[s] || `<span class="pill plain">${esc(s)}</span>`);
+function storeGet(k, d) { try { return localStorage.getItem("webcraft:" + k) ?? d; } catch { return d; } }
+function storeSet(k, v) { try { localStorage.setItem("webcraft:" + k, v); } catch {} }
+
+/* ---------- theme ---------- */
+function setTheme(mode) {
+  if (mode === "auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.dataset.theme = mode;
+  $$("[data-theme-btn]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.themeBtn === mode)));
+  storeSet("theme", mode);
+}
+$$("[data-theme-btn]").forEach((b) => b.addEventListener("click", () => setTheme(b.dataset.themeBtn)));
+setTheme(storeGet("theme", "auto"));
+
+/* ---------- routing ---------- */
+const VIEWS = ["overview", "tokens", "designs", "prompts", "contrast", "audit", "detect", "teardown", "skills", "install"];
+const TITLES = { overview: "Overview", tokens: "Design tokens", designs: "Design library", prompts: "Prompts", contrast: "Contrast checker",
+  audit: "Launch audit", detect: "Detect stack", teardown: "Teardown brief", skills: "Skills", install: "Install & MCP" };
+let lastView = null;
+function parseHash() { const [v, q] = location.hash.replace(/^#/, "").split("?"); return { view: VIEWS.includes(v) ? v : "overview", params: new URLSearchParams(q || "") }; }
+function show(view, params = new URLSearchParams()) {
+  $$(".view").forEach((s) => s.classList.toggle("active", s.id === "view-" + view));
+  $$(".nav-btn").forEach((b) => { if (b.dataset.view === view) b.setAttribute("aria-current", "page"); else b.removeAttribute("aria-current"); });
+  document.title = `${TITLES[view]} · webcraft`;
+  closeNav();
+  if (view === "overview" && META) loadOverview();
+  if (view === "install") refreshStatus();
+  if (view === "designs" && META) routeDesigns(params);
+  if (view === "prompts" && META) loadPrompts(params.get("id") || undefined);
+  if (view !== lastView) {
+    window.scrollTo(0, 0);
+    const h = $(`#view-${view} h1`); if (h && lastView !== null) h.focus({ preventScroll: true });
+  }
+  lastView = view;
+}
+$$(".nav-btn").forEach((b) => b.addEventListener("click", () => { location.hash = b.dataset.view; }));
+window.addEventListener("hashchange", () => { const { view, params } = parseHash(); show(view, params); });
+document.addEventListener("click", (e) => {
+  const go = e.target.closest("[data-go]"); if (!go) return;
+  if (go.dataset.skill) storeSet("skill", go.dataset.skill);
+  location.hash = go.dataset.go;
+  if (go.dataset.skill && META) openSkill(go.dataset.skill);
+});
+
+/* ---------- mobile drawer ---------- */
+function closeNav() { $("#app").classList.remove("nav-open"); $("#nav-toggle").setAttribute("aria-expanded", "false"); }
+$("#nav-toggle").addEventListener("click", () => { const open = $("#app").classList.toggle("nav-open"); $("#nav-toggle").setAttribute("aria-expanded", String(open)); if (open) $(".side .nav-btn").focus(); });
+$("#scrim").addEventListener("click", closeNav);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("#app").classList.contains("nav-open")) closeNav(); });
+
+/* ---------- help panels ---------- */
+const SI = {
+  input: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h10M4 17h6"/></svg>',
+  cog: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>',
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>',
+  out: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>',
+  eye: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>',
+  lock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5a2 2 0 0 1 2-2h12v16H6a2 2 0 0 0-2 2z"/></svg>',
+  plug: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 2v6M15 2v6M6 8h12v4a6 6 0 0 1-12 0zM12 18v4"/></svg>',
+};
+const HELP = {
+  tokens: { hint: "One color in, a checked system out", steps: [
+    ["input", "Pick one brand color", "Any CSS format: hex, rgb(), hsl() or oklch(). Choose a tone that sets fonts and corners."],
+    ["cog", "Roles are derived in OKLCH", "Neutrals get tinted toward your hue. Text is solved to at least 12:1 and muted text to 4.5:1, and links get a darker step if needed."],
+    ["eye", "Dark mode is designed", "Surfaces rise in lightness and the accent loses a little chroma, instead of a plain inversion."],
+    ["out", "Export anywhere", "tokens.css, WordPress theme.json, W3C design tokens or a DESIGN.md for agents."]],
+    cli: 'webcraft tokens "#e4572e" --tone editorial -o tokens.css', mcp: "generate_tokens" },
+  designs: { hint: "84 references, checked and convertible", steps: [
+    ["out", "Download once", "The MIT library from VoltAgent/awesome-design-md is fetched from GitHub into your local cache. Update any time."],
+    ["cog", "Each file is analyzed", "Its palette is mapped onto roles (background, text, accent…) and every component's colors are contrast-checked."],
+    ["eye", "Preview your direction", "See the visual language applied to a neutral page before committing to it."],
+    ["lock", "Use as a reference", "Write DESIGN.md and tokens.css into your project with a notice: keep the principles, not the brand, logo or fonts."]],
+    cli: "webcraft design list dark  ·  webcraft design use linear.app --tokens", mcp: "list_designs, get_design" },
+  contrast: { hint: "WCAG 2.x, exact", steps: [
+    ["input", "Enter two colors", "Any CSS color syntax. Transparent colors are blended over the background first."],
+    ["cog", "Compute the ratio", "Relative luminance per WCAG 2.x, the same math browsers' dev tools use."],
+    ["check", "Compare with thresholds", "4.5:1 for body text, 3:1 for large text and UI parts, 7:1 for AAA."],
+    ["book", "Check a whole stylesheet", "Paste CSS to test every role pair in every theme block, with var() resolved."]],
+    cli: 'webcraft contrast "#777" "#fff"  ·  webcraft contrast --tokens tokens.css', mcp: "check_contrast" },
+  prompts: { hint: "Fill, copy, paste into any AI builder", steps: [
+    ["book", "Pick a prompt", "13 originals by webcraft (MIT), or your own saved in Mine."],
+    ["input", "Fill the placeholders", "Each [PLACEHOLDER] becomes a field. Brand details are remembered across prompts."],
+    ["out", "Copy into your AI tool", "Claude, Codex, Cursor, Lovable, Bolt… Open fields stay highlighted so nothing is missed."],
+    ["lock", "Keep your own privately", "Mine is stored only on this computer. webcraft never uploads or bundles it."]],
+    cli: 'webcraft prompts show saas-landing-page --set "PRODUCT NAME=Acme"', mcp: "list_prompts, get_prompt" },
+  skills: { hint: "Instructions your agent loads on demand", steps: [
+    ["book", "Plain instruction files", "Each skill is a SKILL.md with a name and a description of when to use it."],
+    ["cog", "Descriptions first", "Agents keep only the short descriptions in mind until a task matches one."],
+    ["check", "Then the full skill", "On a match, the agent reads the whole file and follows its rules and checks."],
+    ["plug", "Install per agent", "Use Install & MCP to copy them where Claude, Codex, Gemini or Cursor look."]],
+    cli: "webcraft show hero-section", mcp: "list_skills, get_skill (and one MCP prompt per skill)" },
+  audit: { hint: "About 40 launch checks, ranked", steps: [
+    ["input", "Load the site", "A URL (plus same-site pages), an HTML file or a build folder, with its CSS and JS."],
+    ["cog", "Run the checks", "SEO, accessibility markup, performance hints, placeholder content, links, motion safety and design drift."],
+    ["check", "Rank by severity", "Blockers, should-fix and polish, each with where it is and how to fix it."],
+    ["eye", "Be honest about limits", "What a static check can't see goes under Not checked instead of passing silently."]],
+    cli: "webcraft audit https://example.com --pages 5  ·  --fail-on blocker for CI", mcp: "audit_site" },
+  detect: { hint: "What a site is built with", steps: [
+    ["input", "Fetch the page", "Markup plus same-origin stylesheets and scripts (or local files)."],
+    ["cog", "Match fingerprints", "60+ signatures: CMS, frameworks, GSAP/Lenis/AOS, sliders, analytics, widgets, with versions when visible."],
+    ["eye", "Read the design", "Fonts by role and the palette, with a light/dark guess and accent candidates."],
+    ["book", "Observed vs not", "It says what it could and could not see, so you know what to verify."]],
+    cli: "webcraft detect https://gsap.com", mcp: "detect_stack" },
+  teardown: { hint: "A rebuild brief, never a copy", steps: [
+    ["input", "Find the sections", "Header, hero, proof, services… in page order, named from markup and headings."],
+    ["cog", "Keep the shape, drop the words", "Copy becomes [H1 headline, 5 words, 2 lines]; repeated items and motion hooks are counted."],
+    ["lock", "Strip the brand", "No original text, image URLs, brand names or class names survive."],
+    ["out", "Finish in a browser", "Layout and motion values are marked as inferred for you or your agent to complete."]],
+    cli: "webcraft teardown https://example.com -o brief.md", mcp: "teardown_site" },
+  install: { hint: "Put skills where each agent looks", steps: [
+    ["check", "Choose agents", "Claude Code, Codex, Gemini, Copilot, Cursor, Windsurf, or an AGENTS.md index for anything else."],
+    ["eye", "Preview first", "See exactly which files would be written before anything changes."],
+    ["out", "Install", "Skills are copied and marked, so uninstall only ever removes what webcraft added."],
+    ["plug", "Connect MCP", "Add the server so the agent can call the tools itself in the middle of a task."]],
+    cli: "webcraft install claude  ·  webcraft mcp-config codex", mcp: "(this page configures it)" },
+};
+function renderHelp() {
+  $$("details.help[data-help]").forEach((d) => {
+    const h = HELP[d.dataset.help]; if (!h) { d.remove(); return; }
+    d.innerHTML = `<summary><span class="ico">${SI.book}</span>How this works <span class="hint">· ${esc(h.hint)}</span>
+      <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="help-body"><div class="steps">${h.steps.map(([ic, t, s]) => `<div class="step"><div class="s-ico">${SI[ic]}</div><b>${esc(t)}</b><span>${esc(s)}</span></div>`).join("")}</div>
+      <div class="alt-ways"><div>Same thing in a terminal<code>${esc(h.cli)}</code></div><div>Your AI agent calls (MCP)<code>${esc(h.mcp)}</code></div></div></div>`;
+    d.open = storeGet("help:" + d.dataset.help, "1") === "1" && !storeGet("seen:" + d.dataset.help, "");
+    d.addEventListener("toggle", () => { storeSet("help:" + d.dataset.help, d.open ? "1" : "0"); storeSet("seen:" + d.dataset.help, d.open ? "" : "1"); });
+  });
+}
+
+/* ---------- overview ---------- */
+async function loadOverview() {
+  try {
+    const o = await api("overview");
+    const st = [
+      ["skills", SI.book, "Skills", o.skills, o.installed_agents ? `installed for ${o.installed_agents} agent location(s)` : "not installed in any agent yet", "skills"],
+      ["designs", '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>', "Design references", o.designs.synced ? o.designs.count : "-", o.designs.synced ? `synced ${String(o.designs.synced_at || "").slice(0, 10)}` : "click to download (1 MB)", "designs"],
+      ["prompts", '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h10M4 18h7"/></svg>', "Prompts", o.prompts.builtin + o.prompts.mine, `${o.prompts.builtin} by webcraft · ${o.prompts.mine} of yours`, "prompts"],
+      ["install", SI.plug, "Agents supported", o.agent_targets, "Claude, Codex, Gemini, Copilot, Cursor…", "install"],
+    ];
+    $("#ov-stats").innerHTML = st.map(([k, ic, label, val, sub, go]) => `<button class="stat" data-go="${go}"><span class="s-top">${ic}${esc(label)}</span><span class="s-val">${esc(val)}</span><span class="s-sub">${esc(sub)}</span></button>`).join("");
+    const rows = [["Project folder", o.paths.cwd], ["Your private prompts", o.paths.prompts], ["Design library cache", o.paths.designs], ["Bundled skills", o.paths.skills], ["MCP server command", o.mcp_command]];
+    $("#ov-paths").innerHTML = `<tbody>${rows.map(([k, v]) => `<tr><td>${esc(k)}</td><td><code>${esc(v)}</code></td></tr>`).join("")}</tbody>`;
+    if ($("#badge-designs")) $("#badge-designs").textContent = o.designs.synced ? o.designs.count : "";
+    if ($("#badge-prompts")) $("#badge-prompts").textContent = o.prompts.builtin + o.prompts.mine;
+    if ($("#badge-skills")) $("#badge-skills").textContent = o.skills;
+  } catch (e) { $("#ov-stats").innerHTML = errorBox(e); }
+}
+
+/* ---------- command palette ---------- */
+const PAL = { items: [], sel: 0 };
+function paletteItems() {
+  const nav = VIEWS.map((v) => ({ grp: "Go to", label: TITLES[v], icon: ($(`.nav-btn[data-view="${v}"] svg`) || {}).outerHTML || "", run: () => { location.hash = v; } }));
+  const act = [
+    { label: "Generate tokens from a brand color", icon: SI.cog, run: () => { location.hash = "tokens"; setTimeout(() => $("#tk-brand").focus(), 50); } },
+    { label: "Audit the sample site", icon: SI.check, run: () => { location.hash = "audit"; setTimeout(() => $("#au-sample") && $("#au-sample").click(), 50); } },
+    { label: "Audit a website…", icon: SI.check, run: () => { location.hash = "audit"; setTimeout(() => $("#au-target").focus(), 50); } },
+    { label: "Add a prompt to my library", icon: SI.input, run: () => { location.hash = "prompts"; setTimeout(() => promptForm({}), 80); } },
+    { label: "Browse dark designs", icon: SI.eye, run: () => { location.hash = "designs"; setTimeout(() => { const b = $('#ds-theme [data-th="dark"]'); if (b) b.click(); }, 80); } },
+    { label: "Install skills for Claude Code", icon: SI.plug, run: () => { location.hash = "install"; } },
+    { label: "Toggle light / dark theme", icon: SI.eye, run: () => setTheme(document.documentElement.dataset.theme === "dark" ? "light" : "dark") },
+  ].map((a) => ({ ...a, grp: "Actions" }));
+  const sk = (META ? META.skills : []).map((s) => ({ grp: "Skills", label: s.name, icon: SI.book, run: () => { storeSet("skill", s.name); location.hash = "skills"; openSkill(s.name); } }));
+  return [...act, ...nav, ...sk];
+}
+function renderPalette() {
+  const q = $("#pal-q").value.toLowerCase().trim();
+  PAL.items = paletteItems().filter((i) => !q || i.label.toLowerCase().includes(q) || i.grp.toLowerCase().includes(q));
+  PAL.sel = Math.min(PAL.sel, Math.max(PAL.items.length - 1, 0));
+  let grp = "", html = "";
+  PAL.items.forEach((it, i) => {
+    if (it.grp !== grp) { grp = it.grp; html += `<li class="grp" role="presentation">${esc(grp)}</li>`; }
+    html += `<li class="pal-item" role="option" id="pal-${i}" data-i="${i}" aria-selected="${i === PAL.sel}">${it.icon}<span>${esc(it.label)}</span></li>`;
+  });
+  $("#pal-list").innerHTML = html || `<li class="grp">No matches</li>`;
+  $("#pal-q").setAttribute("aria-activedescendant", PAL.items.length ? `pal-${PAL.sel}` : "");
+  const cur = $(`#pal-${PAL.sel}`); if (cur) cur.scrollIntoView({ block: "nearest" });
+}
+function openPalette() { const d = $("#palette"); if (d.open) return; $("#pal-q").value = ""; PAL.sel = 0; renderPalette(); d.showModal(); $("#pal-q").focus(); }
+function runPalette(i) { const it = PAL.items[i]; if (!it) return; $("#palette").close(); it.run(); }
+$$("[data-open-palette]").forEach((b) => b.addEventListener("click", openPalette));
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); openPalette(); return; }
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement || {}).tagName || "");
+  if (e.key === "/" && !typing && !$("#palette").open) {
+    const s = $(".view.active input[type=text]"); if (s) { e.preventDefault(); s.focus(); }
+  }
+});
+
+/* ---------- tokens ---------- */
+const TK = { tone: "corporate", out: "css", pv: "light", data: null };
+const ROLE_LABEL = { "--bg": "Page background", "--surface": "Cards, inputs", "--surface-2": "Hover, 2nd elevation", "--text": "Body text", "--muted": "Secondary text", "--border": "Hairlines", "--accent": "Buttons, highlights", "--accent-ink": "Links on bg", "--on-accent": "Text on accent" };
+const fontLinks = new Set();
+function loadFonts(url) { if (!url || fontLinks.has(url)) return; fontLinks.add(url); const l = document.createElement("link"); l.rel = "stylesheet"; l.href = url; document.head.appendChild(l); }
+function applyPreview() {
+  const d = TK.data; if (!d) return;
+  const t = d.tokens, el = $("#tk-preview"), theme = t.themes[TK.pv];
+  for (const [k, v] of Object.entries(theme)) el.style.setProperty("--p-" + k.slice(2), v);
+  for (const [k, v] of Object.entries(t.fonts)) el.style.setProperty("--p-" + k.slice(2), v);
+  for (const [k, v] of Object.entries(t.radius)) el.style.setProperty("--p-" + k.slice(2), v);
+}
+function renderTokens() {
+  const d = TK.data, t = d.tokens, theme = t.themes[TK.pv];
+  $("#tk-summary").textContent = `${t.brand_hue} · ${t.tone} · ${t.radius_personality} corners`;
+  $("#tk-notes").innerHTML = (t.notes || []).map((n) => `<div class="pill info" style="white-space:normal;border-radius:8px;padding:8px 10px;font-weight:500">${esc(n)}</div>`).join("");
+  $("#tk-swatches").innerHTML = Object.entries(theme).filter(([k]) => k !== "--shadow").map(([k, v]) =>
+    `<button class="swatch" type="button" data-copy="${esc(v)}" title="Copy ${esc(v)}"><div class="chip" style="background:${esc(v)}"></div><div class="meta"><b>${esc(k)}</b><span>${esc(v)}</span><div style="color:var(--muted);font-family:var(--font)">${esc(ROLE_LABEL[k] || "")}</div></div></button>`).join("");
+  $$("#tk-swatches .swatch").forEach((b) => b.addEventListener("click", () => copy(b.dataset.copy, `Copied ${b.dataset.copy}`)));
+  const rows = [];
+  for (const [th, list] of Object.entries(t.contrast)) for (const r of list)
+    rows.push(`<tr><td>${esc(th)}</td><td class="mono">${esc(r.pair)}</td><td><span style="display:inline-flex;gap:6px;align-items:center"><span style="width:14px;height:14px;border-radius:4px;background:${esc(r.fg)};border:1px solid var(--border)"></span><span style="width:14px;height:14px;border-radius:4px;background:${esc(r.bg)};border:1px solid var(--border)"></span></span></td><td class="mono"><b>${esc(r.ratio)}</b>:1</td><td class="mono" style="color:var(--muted)">min ${esc(r.minimum)}</td><td>${statusPill(r.status)}</td></tr>`);
+  $("#tk-contrast").innerHTML = `<thead><tr><th>Theme</th><th>Pair</th><th></th><th>Ratio</th><th>Needs</th><th>Result</th></tr></thead><tbody>${rows.join("")}</tbody>`;
+  $("#tk-code").textContent = d[TK.out];
+  applyPreview();
+  loadFonts(t.google_fonts_url);
+}
+const genTokens = debounce(async () => {
+  const brand = $("#tk-brand").value.trim(); if (!brand) return;
+  try {
+    TK.data = await api("tokens", { brand, tone: TK.tone, base: $("#tk-base").value, radius: $("#tk-radius").value, base_styles: $("#tk-basestyles").checked });
+    $("#tk-brand").style.borderColor = ""; renderTokens();
+    if (/^#[0-9a-f]{6}$/i.test(TK.data.tokens.brand)) $("#tk-picker").value = TK.data.tokens.brand;
+    storeSet("brand", brand);
+  } catch (e) { $("#tk-brand").style.borderColor = "var(--bad)"; $("#tk-notes").innerHTML = errorBox(e); }
+}, 220);
+$("#tk-picker").addEventListener("input", (e) => { $("#tk-brand").value = e.target.value; genTokens(); });
+$("#tk-brand").addEventListener("input", genTokens);
+["#tk-base", "#tk-radius", "#tk-basestyles"].forEach((s) => $(s).addEventListener("change", genTokens));
+$$("[data-pv]").forEach((b) => b.addEventListener("click", () => { TK.pv = b.dataset.pv; $$("[data-pv]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); if (TK.data) renderTokens(); }));
+$$("#tk-tabs [data-out]").forEach((b) => b.addEventListener("click", () => { TK.out = b.dataset.out; $$("#tk-tabs [data-out]").forEach((x) => x.setAttribute("aria-selected", String(x === b))); if (TK.data) $("#tk-code").textContent = TK.data[TK.out]; }));
+$("#tk-copy").addEventListener("click", () => TK.data && copy(TK.data[TK.out]));
+$("#tk-download").addEventListener("click", () => { if (!TK.data) return; const names = { css: ["tokens.css", "text/css"], theme_json: ["theme.json", "application/json"], dtcg: ["tokens.json", "application/json"], design_md: ["DESIGN.md", "text/markdown"] }; const [n, ty] = names[TK.out]; download(n, TK.data[TK.out], ty); });
+
+/* ---------- design library ---------- */
+const DS = { theme: "", loaded: false, current: null };
+const safeColor = (c) => (/^#[0-9a-f]{3,8}$/i.test(c || "") || /^(rgb|hsl|oklch|oklab)a?\([\d\s.,%/+-]+\)$/i.test(c || "")) ? c : "transparent";
+function dsStatus(st) {
+  const box = $("#ds-status");
+  if (!st.synced) {
+    box.style.display = "block";
+    box.innerHTML = `<h2>Library not downloaded</h2><p style="margin:0 0 12px;color:var(--muted)">webcraft fetches the collection from GitHub once (about 1 MB) and keeps it in <span class="mono">${esc(st.path)}</span>. Update it any time.</p><button class="btn" id="ds-sync">Download library</button>`;
+    $("#ds-browse").style.display = "none";
+  } else {
+    box.style.display = "block";
+    box.innerHTML = `<div class="row" style="justify-content:space-between"><span style="color:var(--muted);font-size:13px"><b style="color:var(--text)">${esc(st.count)} designs</b> · synced ${esc((st.synced_at || "").replace("T", " "))} · commit <span class="mono">${esc((st.commit || "").slice(0, 8))}</span> · ${esc(st.license || "MIT")}</span><button class="btn ghost small" id="ds-sync">Update</button></div>`;
+    $("#ds-browse").style.display = "";
+  }
+  $("#ds-sync").onclick = async (ev) => {
+    const btn = ev.currentTarget; busy(btn, true, "Downloading");
+    try { await api("design_sync"); toast("Library updated"); DS.loaded = false; await loadDesigns(); }
+    catch (e) { box.insertAdjacentHTML("beforeend", errorBox(e)); } finally { busy(btn, false); }
+  };
+}
+async function loadDesigns() {
+  try {
+    const q = [$("#ds-q").value.trim(), DS.theme].filter(Boolean).join(" ");
+    const st = await api("design_status"); dsStatus(st);
+    if (!st.synced) return;
+    const { items } = await api("design_list", { query: q });
+    DS.loaded = true;
+    $("#ds-grid").innerHTML = items.length ? items.map((i) => {
+      const s = i.swatches;
+      return `<button class="ds-card" type="button" data-name="${esc(i.name)}">
+        <div class="ds-hero" style="background:${safeColor(s["--bg"])};color:${safeColor(s["--text"])}">
+          <div class="row" style="justify-content:space-between"><span class="aa">Aa</span><span class="row">${["--surface", "--muted", "--border"].map((k) => `<span class="dot" style="background:${safeColor(s[k])}"></span>`).join("")}</span></div>
+          <div class="row"><span class="btnp" style="background:${safeColor(s["--accent"])};color:${safeColor(s["--on-accent"])}">Button</span><span style="font-size:12px;color:${safeColor(s["--muted"])}">muted text</span></div>
+        </div>
+        <div class="ds-body"><div class="row" style="justify-content:space-between"><b>${esc(i.name)}</b><span class="row" style="gap:4px"><span class="pill plain">${esc(i.theme)}</span>${i.fails ? `<span class="pill warn" title="color pairs below WCAG AA">${i.fails} below AA</span>` : `<span class="pill ok" title="all checked pairs pass WCAG AA">AA ✓</span>`}</span></div><p>${esc(i.description)}</p></div>
+      </button>`; }).join("") : `<div class="empty">No designs match.</div>`;
+    $$("#ds-grid .ds-card").forEach((c) => c.addEventListener("click", () => { location.hash = "designs?name=" + encodeURIComponent(c.dataset.name); }));
+  } catch (e) { $("#ds-grid").innerHTML = errorBox(e); }
+}
+async function openDesign(name) {
+  $("#ds-browse").style.display = "none"; $("#ds-status").style.display = "none";
+  const box = $("#ds-detail"); box.style.display = "block";
+  box.innerHTML = `<div class="empty"><span class="spinner" style="display:inline-block;vertical-align:-3px;margin-right:8px"></span>Loading ${esc(name)}…</div>`;
+  try {
+    const d = await api("design_get", { name }); DS.current = d;
+    const r = d.check.roles, chk = d.check;
+    const rows = chk.role_pairs.map((x) => `<tr><td class="mono">${esc(x.pair)}</td><td class="mono">${esc(x.fg)} on ${esc(x.bg)}</td><td class="mono"><b>${esc(x.ratio)}</b>:1</td><td>${statusPill(x.status)}</td></tr>`).join("")
+      + chk.components.map((x) => `<tr><td class="mono">${esc(x.component)}</td><td class="mono">${esc(x.fg)} on ${esc(x.bg)}</td><td class="mono"><b>${esc(x.ratio)}</b>:1</td><td>${statusPill(x.status)}</td></tr>`).join("");
+    const GENERIC = /^(system-ui|-apple-system|blinkmacsystemfont|sans-serif|serif|monospace|ui-sans-serif|ui-serif|ui-monospace|helvetica|arial|segoe ui|roboto|inherit|sf pro.*|sf mono|menlo|consolas)$/i;
+    const fonts = [...new Set(Object.values(d.fonts).filter(Boolean).map((f) => String(f).split(",")[0].trim().replace(/^['"]|['"]$/g, "")).filter((f) => f && !GENERIC.test(f)))];
+    box.innerHTML = `
+      <div class="row" style="margin-bottom:14px"><button class="btn ghost small" id="ds-back">← All designs</button></div>
+      <div class="row" style="justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div><h2 style="margin:0;font-size:22px;letter-spacing:-.02em">${esc(d.label)}</h2><div style="color:var(--muted);font-size:13px">${esc(d.parsed.name)} · ${esc(chk.theme)} · ${Object.keys(d.parsed.colors).length} colors · ${d.parsed.has_frontmatter ? "structured frontmatter" : "prose palette (roles inferred)"}</div></div>
+        <div class="row"><button class="btn ghost small" id="ds-copy">Copy DESIGN.md</button><button class="btn ghost small" id="ds-dl">Download DESIGN.md</button><button class="btn small" id="ds-dlt">Download tokens.css</button></div>
+      </div>
+      <div class="ds-notice">A reference for visual language only. Do not use this company's name, logo, imagery or copy, and license or replace the fonts it names${fonts.length ? ` (${esc(fonts.slice(0, 4).join(", "))})` : ""}.</div>
+      <div class="grid-2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin-top:16px">
+        <div class="stack">
+          <div class="card"><h2>Preview <span class="sub">roles mapped onto webcraft tokens</span></h2>
+            <div class="preview" id="ds-preview">
+              <div class="p-nav"><span class="p-logo">[Brand]</span><span class="p-links"><span>Product</span><span>Pricing</span><span>Docs</span></span></div>
+              <div class="p-hero"><p class="p-eyebrow">Eyebrow label</p><h3 class="p-h">Your headline in this visual language</h3><p class="p-lede">Muted supporting text shows whether secondary copy stays readable.</p>
+                <div class="p-cta"><button class="p-btn" type="button">Primary action</button><a class="p-link" href="#designs">Text link</a></div></div>
+              <div class="p-cards"><div class="p-card"><b>Card title</b><p>Surface, border and muted text together.</p></div><div class="p-card"><b>Card title</b><p>Surface, border and muted text together.</p></div></div>
+            </div></div>
+          <div class="card"><h2>Palette</h2><div class="swatches" style="grid-template-columns:repeat(auto-fill,minmax(110px,1fr))">${Object.entries(d.parsed.colors).slice(0, 40).map(([k, v]) => `<button class="swatch" type="button" data-copy="${esc(v)}"><div class="chip" style="background:${safeColor(v)};height:38px"></div><div class="meta"><b style="font-size:11px">${esc(k)}</b><span>${esc(v)}</span></div></button>`).join("")}</div></div>
+        </div>
+        <div class="stack">
+          <div class="card"><h2>Contrast check <span class="sub">${chk.fails ? `${chk.fails} below AA` : "all pass"}</span></h2><div class="tbl-wrap" style="max-height:420px;overflow:auto"><table class="tbl"><tbody>${rows}</tbody></table></div></div>
+          <div class="card stack"><h2 style="margin:0">Add to a project</h2>
+            <label class="field">Project folder<input type="text" id="ds-dir" value="${esc(META.cwd)}"></label>
+            <label class="check"><input type="checkbox" id="ds-tok" checked> Also write tokens.css</label>
+            <label class="check"><input type="checkbox" id="ds-force"> Overwrite existing files</label>
+            <div class="row"><button class="btn" id="ds-use">Write DESIGN.md</button></div><div id="ds-use-out"></div></div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:16px"><div class="tabs" role="tablist" id="ds-tabs"><button role="tab" data-t="doc" aria-selected="true">Document</button><button role="tab" data-t="tokens" aria-selected="false">tokens.css</button><button role="tab" data-t="raw" aria-selected="false">Raw</button></div><div id="ds-tab"></div></div>`;
+    const pv = $("#ds-preview");
+    const map = { "--bg": "bg", "--surface": "surface", "--text": "text", "--muted": "muted", "--border": "border", "--accent": "accent", "--on-accent": "on-accent" };
+    for (const [k, v] of Object.entries(map)) pv.style.setProperty("--p-" + v, safeColor(r[k] || r["--bg"]));
+    pv.style.setProperty("--p-surface-2", safeColor(r["--surface"])); pv.style.setProperty("--p-accent-ink", safeColor(r["--accent"]));
+    pv.style.setProperty("--p-font-display", "system-ui, sans-serif"); pv.style.setProperty("--p-font-body", "system-ui, sans-serif");
+    const rad = d.rounded || {}; pv.style.setProperty("--p-radius", /^[\d.]+(px|rem)$/.test(rad.md || rad.lg || "") ? (rad.md || rad.lg) : "12px"); pv.style.setProperty("--p-radius-pill", "999px"); pv.style.setProperty("--p-shadow", "none");
+    const tab = (t) => { $$("#ds-tabs [data-t]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.t === t)));
+      const el = $("#ds-tab"); if (t === "doc") { el.className = "md"; el.innerHTML = md(d.raw); } else { el.className = ""; el.innerHTML = `<pre class="code" style="max-height:620px"></pre>`; $("pre", el).textContent = t === "tokens" ? d.tokens_css : d.raw; } };
+    $$("#ds-tabs [data-t]").forEach((b) => b.addEventListener("click", () => tab(b.dataset.t))); tab("doc");
+    $$("#ds-detail .swatch").forEach((b) => b.addEventListener("click", () => copy(b.dataset.copy, `Copied ${b.dataset.copy}`)));
+    $("#ds-back").onclick = () => { location.hash = "designs"; };
+    $("#ds-copy").onclick = () => copy(d.text, "DESIGN.md copied");
+    $("#ds-dl").onclick = () => download("DESIGN.md", d.text, "text/markdown");
+    $("#ds-dlt").onclick = () => download("tokens.css", d.tokens_css, "text/css");
+    $("#ds-use").onclick = async (ev) => {
+      const btn = ev.currentTarget; busy(btn, true, "Writing");
+      try { const res = await api("design_use", { name, dir: $("#ds-dir").value.trim(), tokens: $("#ds-tok").checked, force: $("#ds-force").checked });
+        $("#ds-use-out").innerHTML = `<pre class="code" style="white-space:pre-wrap"></pre>`; $("#ds-use-out pre").textContent = res.log.join("\n"); }
+      catch (e) { $("#ds-use-out").innerHTML = errorBox(e); } finally { busy(btn, false); }
+    };
+  } catch (e) {
+    box.innerHTML = `<div class="row" style="margin-bottom:14px"><button class="btn ghost small" id="ds-back">← All designs</button></div>` + errorBox(e);
+    $("#ds-back").onclick = () => { location.hash = "designs"; };
+  }
+}
+function routeDesigns(params) {
+  const name = params.get("name");
+  if (name) { openDesign(name); return; }
+  $("#ds-detail").style.display = "none"; $("#ds-detail").innerHTML = "";
+  loadDesigns();
+}
+$("#ds-q").addEventListener("input", debounce(loadDesigns, 200));
+$$("#ds-theme [data-th]").forEach((b) => b.addEventListener("click", () => { DS.theme = b.dataset.th; $$("#ds-theme [data-th]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); loadDesigns(); }));
+
+/* ---------- prompts ---------- */
+const PR = { lib: "all", current: null, cats: [], minePath: "" };
+const PH_RE = /\[([A-Z][A-Z0-9 ,\/&'()+.:-]{1,80})\]/g;
+function phValues() { try { return JSON.parse(storeGet("ph", "{}")) || {}; } catch { return {}; } }
+function phSave(v) { storeSet("ph", JSON.stringify(v)); }
+function fillPrompt(body, vals) { return body.replace(PH_RE, (m, k) => (vals[k] && vals[k].trim()) ? vals[k] : m); }
+function highlightOpen(text) { return esc(text).replace(/\[([A-Z][A-Z0-9 ,\/&'()+.:-]{1,80})\]/g, "<mark>[$1]</mark>"); }
+async function loadPrompts(selectId) {
+  try {
+    const d = await api("prompts_list", { library: PR.lib, query: $("#pr-q").value.trim(), category: $("#pr-cat").value });
+    PR.cats = d.categories; PR.minePath = d.mine_path;
+    const sel = $("#pr-cat"), cur = sel.value;
+    sel.innerHTML = `<option value="">All categories</option>` + d.categories.map((c) => `<option${c === cur ? " selected" : ""}>${esc(c)}</option>`).join("");
+    $("#pr-list").innerHTML = d.items.length ? d.items.map((p) => `<button class="skill-item" data-id="${esc(p.id)}">
+        <b style="font-family:var(--font);font-size:14px">${esc(p.title)}</b>
+        <span style="display:flex;gap:4px;flex-wrap:wrap;margin:4px 0 2px"><span class="pill ${p.library === "mine" ? "info" : "plain"}">${p.library === "mine" ? "mine" : "webcraft"}</span><span class="pill plain">${esc(p.category)}</span>${p.motion ? `<span class="pill plain">motion: ${esc(p.motion)}</span>` : ""}</span>
+        <span>${esc(p.description)}</span></button>`).join("")
+      : `<div class="empty">${PR.lib === "mine" ? "Your library is empty. Use “+ Add prompt” to save prompts you own; they stay on this computer." : "No prompts match."}</div>`;
+    $$("#pr-list .skill-item").forEach((b) => b.addEventListener("click", () => openPrompt(b.dataset.id)));
+    const want = selectId || (PR.current && PR.current.id) || storeGet("prompt", "");
+    if (want && d.items.some((p) => p.id === want)) openPrompt(want);
+    else if (d.items.length && !PR.current) openPrompt(d.items[0].id);
+  } catch (e) { $("#pr-list").innerHTML = errorBox(e); }
+}
+async function openPrompt(id) {
+  $$("#pr-list .skill-item").forEach((b) => b.setAttribute("aria-current", String(b.dataset.id === id)));
+  try {
+    const p = await api("prompts_get", { id }); PR.current = p; storeSet("prompt", id);
+    const vals = phValues();
+    $("#pr-detail").innerHTML = `<div class="card stack">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div><h2 style="margin:0 0 4px;font-size:20px;letter-spacing:-.015em">${esc(p.title)}</h2>
+          <div style="color:var(--muted);font-size:13px">${esc(p.description)}</div></div>
+        <div class="row">${p.library === "mine" ? `<button class="btn ghost small" id="pr-edit">Edit</button><button class="btn ghost small" id="pr-del">Delete</button>` : `<button class="btn ghost small" id="pr-dup" title="Save an editable copy to your library">Copy to Mine</button>`}</div>
+      </div>
+      <div class="chips">${p.stack ? `<span class="pill plain">${esc(p.stack)}</span>` : ""}${p.motion ? `<span class="pill plain">motion: ${esc(p.motion)}</span>` : ""}${(p.tags || []).map((t) => `<span class="pill info">${esc(t)}</span>`).join("")}${p.source && p.library === "mine" ? `<span class="pill warn">source: ${esc(p.source)}</span>` : ""}</div>
+      ${p.library === "mine" ? `<div class="ds-notice" style="background:var(--info-bg);color:var(--accent-ink)">Private prompt: stored only at <span class="mono">${esc(PR.minePath)}</span>. Use it in your own projects; don't republish its text.</div>` : ""}
+      ${p.placeholders.length ? `<div><div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Fill in <span class="sub">${p.placeholders.length} placeholders · values are remembered across prompts</span></h2><button class="btn ghost small" id="pr-clear">Clear values</button></div>
+        <div class="ph-grid">${p.placeholders.map((k) => `<label>${esc(k)}<input type="text" data-ph="${esc(k)}" value="${esc(vals[k] || "")}"></label>`).join("")}</div></div>` : ""}
+      <div><div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Prompt <span class="sub" id="pr-open"></span></h2>
+        <div class="row"><button class="btn ghost small" id="pr-dl">Download .md</button><button class="btn small" id="pr-copy">Copy prompt</button></div></div>
+        <pre class="code prompt-out" id="pr-out"></pre></div></div>`;
+    const render = () => {
+      const v = phValues(); const text = fillPrompt(p.body, v);
+      $("#pr-out").innerHTML = highlightOpen(text);
+      const open = [...new Set([...text.matchAll(PH_RE)].map((m) => m[1]))];
+      $("#pr-open").textContent = open.length ? `${open.length} still open (highlighted)` : "ready to paste";
+      return text;
+    };
+    render();
+    $$("#pr-detail [data-ph]").forEach((inp) => inp.addEventListener("input", () => { const v = phValues(); v[inp.dataset.ph] = inp.value; phSave(v); render(); }));
+    $("#pr-copy").onclick = () => copy(render(), "Prompt copied");
+    $("#pr-dl").onclick = () => download(`${p.slug}.md`, render(), "text/markdown");
+    const clear = $("#pr-clear"); if (clear) clear.onclick = () => { const v = phValues(); p.placeholders.forEach((k) => delete v[k]); phSave(v); openPrompt(id); };
+    const dup = $("#pr-dup"); if (dup) dup.onclick = () => promptForm({ ...p, id: "", title: p.title + " (my version)", source: "webcraft", source_url: "" });
+    const edit = $("#pr-edit"); if (edit) edit.onclick = () => promptForm(p);
+    const del = $("#pr-del"); if (del) del.onclick = async () => { if (!confirm(`Delete “${p.title}” from your library?`)) return;
+      try { await api("prompts_delete", { id }); toast("Deleted"); PR.current = null; storeSet("prompt", ""); loadPrompts(); } catch (e) { toast(e.message); } };
+  } catch (e) { $("#pr-detail").innerHTML = errorBox(e); }
+}
+function promptForm(p = {}) {
+  $$("#pr-list .skill-item").forEach((b) => b.setAttribute("aria-current", "false"));
+  const editing = (p.id || "").startsWith("mine/");
+  $("#pr-detail").innerHTML = `<div class="card stack">
+    <h2 style="margin:0;font-size:18px">${editing ? "Edit prompt" : "Add a prompt to your library"}</h2>
+    <div class="ds-notice">Only add prompts you have the right to use, such as ones you wrote or bought for your own projects. They are saved only on this computer (<span class="mono">${esc(PR.minePath)}</span>) and webcraft never uploads, bundles or shares them.</div>
+    <label class="field">Title<input type="text" id="pf-title" value="${esc(p.title || "")}"></label>
+    <div class="row"><label class="field grow">Category<input type="text" id="pf-cat" list="pf-cats" value="${esc(p.category || "")}" placeholder="Hero, Landing Page, Dashboard…"><datalist id="pf-cats">${PR.cats.map((c) => `<option value="${esc(c)}">`).join("")}</datalist></label>
+      <label class="field grow">Tags <span class="hint">comma-separated</span><input type="text" id="pf-tags" value="${esc((p.tags || []).join(", "))}"></label></div>
+    <div class="row"><label class="field grow">Source <span class="hint">where it came from</span><input type="text" id="pf-src" value="${esc(p.source || "")}" placeholder="e.g. written by me, bought from …"></label>
+      <label class="field grow">Source URL<input type="text" id="pf-url" value="${esc(p.source_url || "")}"></label></div>
+    <label class="field">Short description<input type="text" id="pf-desc" value="${esc(p.description || "")}"></label>
+    <label class="field">Prompt text <span class="hint">write placeholders as [UPPERCASE WORDS] to get fill-in fields</span><textarea id="pf-body" style="min-height:280px">${esc(p.body || "")}</textarea></label>
+    <div class="row"><button class="btn" id="pf-save">${editing ? "Save changes" : "Save to Mine"}</button><button class="btn ghost" id="pf-cancel">Cancel</button></div>
+    <div id="pf-out"></div></div>`;
+  $("#pf-cancel").onclick = () => (PR.current ? openPrompt(PR.current.id) : ($("#pr-detail").innerHTML = `<div class="card"><div class="empty">Choose a prompt.</div></div>`));
+  $("#pf-save").onclick = async (ev) => {
+    const btn = ev.currentTarget; busy(btn, true, "Saving");
+    try {
+      const saved = await api("prompts_save", { id: editing ? p.id : "", title: $("#pf-title").value, category: $("#pf-cat").value, tags: $("#pf-tags").value,
+        source: $("#pf-src").value, source_url: $("#pf-url").value, description: $("#pf-desc").value, body: $("#pf-body").value, stack: p.stack || "", motion: p.motion || "" });
+      toast("Saved to your library"); PR.lib = "mine"; $$("#pr-lib [data-lib]").forEach((x) => x.setAttribute("aria-pressed", String(x.dataset.lib === "mine")));
+      PR.current = null; await loadPrompts(saved.id);
+    } catch (e) { $("#pf-out").innerHTML = errorBox(e); } finally { busy(btn, false); }
+  };
+}
+$("#pr-q").addEventListener("input", debounce(() => loadPrompts(), 200));
+$("#pr-cat").addEventListener("change", () => loadPrompts());
+$("#pr-new").addEventListener("click", () => promptForm({}));
+$$("#pr-lib [data-lib]").forEach((b) => b.addEventListener("click", () => { PR.lib = b.dataset.lib; $$("#pr-lib [data-lib]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); PR.current = null; loadPrompts(); }));
+
+/* ---------- contrast ---------- */
+const runContrast = debounce(async () => {
+  const fg = $("#ct-fg").value.trim(), bg = $("#ct-bg").value.trim();
+  try {
+    const d = await api("contrast", { fg, bg });
+    $("#ct-ratio").textContent = d.ratio.toFixed(2) + ":1";
+    $("#ct-levels").innerHTML = Object.entries(d.levels).map(([k, ok]) => `<span class="pill ${ok ? "ok" : "bad"}">${ok ? "✓" : "✕"} ${esc(k)}</span>`).join("");
+    const s = $("#ct-sample"); s.style.background = d.bg; s.style.color = d.fg;
+    $("#ct-fg-pick").value = d.fg.slice(0, 7); $("#ct-bg-pick").value = d.bg.slice(0, 7);
+  } catch (e) { $("#ct-ratio").textContent = "-"; $("#ct-levels").innerHTML = errorBox(e); }
+}, 150);
+[["#ct-fg-pick", "#ct-fg"], ["#ct-bg-pick", "#ct-bg"]].forEach(([p, t]) => {
+  $(p).addEventListener("input", (e) => { $(t).value = e.target.value; runContrast(); });
+  $(t).addEventListener("input", runContrast);
+});
+$("#ct-swap").addEventListener("click", () => { const a = $("#ct-fg").value; $("#ct-fg").value = $("#ct-bg").value; $("#ct-bg").value = a; runContrast(); });
+$("#ct-css-run").addEventListener("click", async (ev) => {
+  const btn = ev.currentTarget, out = $("#ct-css-out"); busy(btn, true, "Checking");
+  try {
+    const d = await api("contrast", { css: $("#ct-css").value });
+    const themes = Object.entries(d.themes).filter(([, rows]) => rows.length);
+    out.innerHTML = themes.length ? themes.map(([label, rows]) => `<h3 style="font-size:13px;margin:12px 0 6px" class="mono">${esc(label)}</h3><div class="tbl-wrap"><table class="tbl"><tbody>${rows.map((r) => `<tr><td class="mono">${esc(r.pair)}</td><td class="mono">${esc(r.fg)} on ${esc(r.bg)}</td><td class="mono"><b>${r.ratio == null ? "?" : esc(r.ratio) + ":1"}</b></td><td>${statusPill(r.status)}</td></tr>`).join("")}</tbody></table></div>`).join("")
+      : `<div class="empty">No role pairs found. Expected custom properties such as --text and --bg.</div>`;
+  } catch (e) { out.innerHTML = errorBox(e); } finally { busy(btn, false); }
+});
+
+/* ---------- audit ---------- */
+const SEV = { blocker: ["Blockers", "bad"], "should-fix": ["Should fix", "warn"], polish: ["Polish", "plain"] };
+function renderAudit(d) {
+  const r = d.report, cls = r.verdict === "Ready" ? "ok" : r.verdict === "Not ready" ? "bad" : "warn";
+  const groups = Object.entries(SEV).map(([sev, [label, pc]]) => {
+    const items = r.findings.filter((f) => f.severity === sev);
+    if (!items.length) return `<div class="sev-group"><h3>${label}</h3><div class="empty" style="padding:14px">None found.</div></div>`;
+    return `<div class="sev-group"><h3>${label} · ${items.length}</h3>${items.map((f) => `
+      <div class="finding"><div class="f-top"><span class="pill ${pc}">${esc(label.replace(/s$/, ""))}</span><span class="pill plain">${esc(f.area)}</span>${f.count > 1 ? `<span class="pill plain">×${f.count}</span>` : ""}</div>
+      <div class="f-problem">${esc(f.problem)}</div><div class="f-meta">${esc(f.where)}</div><div class="f-fix">${esc(f.fix)}</div>
+      ${f.examples && f.examples.length ? `<details><summary>Examples</summary><ul class="plain">${f.examples.map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>` : ""}</div>`).join("")}</div>`;
+  }).join("");
+  $("#au-out").innerHTML = `
+    <div class="verdict ${cls}"><div><div class="v-title">${esc(r.verdict)}</div><div class="v-sub">${esc(r.target)} · ${r.pages.length} page(s) · checked ${esc(r.checked)}</div></div>
+      <div class="counts"><span class="pill bad">${r.counts.blocker} blocker</span><span class="pill warn">${r.counts["should-fix"]} should fix</span><span class="pill plain">${r.counts.polish} polish</span></div></div>
+    ${r.errors.map((e) => `<div class="error" style="margin-top:10px">${esc(e)}</div>`).join("")}
+    <div class="row" style="margin:14px 0 0"><button class="btn ghost small" id="au-copy">Copy report</button><button class="btn ghost small" id="au-md">Download .md</button><button class="btn ghost small" id="au-json">Download JSON</button></div>
+    <div class="grid-2" style="grid-template-columns:minmax(0,1fr) minmax(0,320px);margin-top:4px">
+      <div>${groups}</div>
+      <div class="stack" style="margin-top:18px">
+        <div class="card"><h2>Not checked</h2><ul class="plain">${r.not_checked.map((n) => { const [a, ...b] = n.split(": "); return `<li><b>${esc(a)}</b>${b.length ? ` <span style="color:var(--muted)">${esc(b.join(": "))}</span>` : ""}</li>`; }).join("")}</ul></div>
+        ${r.passed.length ? `<div class="card"><h2>Passed</h2><div class="chips">${r.passed.map((p) => `<span class="pill ok">${esc(p)}</span>`).join("")}</div></div>` : ""}
+      </div></div>`;
+  $("#au-copy").onclick = () => copy(d.text, "Report copied");
+  $("#au-md").onclick = () => download("launch-qa.md", d.text, "text/markdown");
+  $("#au-json").onclick = () => download("launch-qa.json", JSON.stringify(r, null, 2), "application/json");
+}
+async function runAudit() {
+  const btn = $("#au-run"), target = $("#au-target").value.trim();
+  if (!target) { $("#au-out").innerHTML = errorBox("Enter a URL, an HTML file or a folder."); return; }
+  storeSet("target", target); busy(btn, true, "Auditing");
+  $("#au-out").innerHTML = skeleton(`Auditing ${target}… live sites take 10 to 40 seconds (robots, sitemap, redirects and links are fetched).`, "audit");
+  try { renderAudit(await api("audit", { target, pages: +$("#au-pages").value || 1, offline: $("#au-offline").checked })); }
+  catch (e) { $("#au-out").innerHTML = errorBox(e); } finally { busy(btn, false); }
+}
+$("#au-run").addEventListener("click", runAudit);
+$("#au-target").addEventListener("keydown", (e) => { if (e.key === "Enter") runAudit(); });
+
+/* ---------- detect ---------- */
+const CAT = { cms: "CMS / builder", framework: "Framework", css: "CSS", motion: "Motion", "3d": "3D", slider: "Sliders", library: "Libraries", fonts: "Font services", analytics: "Analytics", widget: "Widgets" };
+async function runDetect() {
+  const btn = $("#dt-run"), target = $("#dt-target").value.trim(), out = $("#dt-out");
+  if (!target) { out.innerHTML = errorBox("Enter a URL, an HTML file or a folder."); return; }
+  storeSet("target", target); busy(btn, true, "Detecting");
+  out.innerHTML = skeleton(`Fetching ${target} and matching fingerprints…`, "two");
+  try {
+    const { result: r } = await api("detect", { target });
+    const cats = Object.keys(CAT).filter((c) => r.technologies[c]);
+    const p = r.palette || {}, f = r.fonts || {};
+    out.innerHTML = `<div class="grid-2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+      <div class="card"><h2>Technologies ${r.generator ? `<span class="sub">generator: ${esc(r.generator)}</span>` : ""}</h2>
+        ${cats.length ? `<table class="tbl"><tbody>${cats.map((c) => `<tr><th style="width:130px">${esc(CAT[c])}</th><td><div class="chips">${r.technologies[c].map((t) => `<span class="pill info" title="evidence: ${esc(t.evidence)}">${esc(t.name)}${t.version ? ` <span class="mono" style="font-weight:500">${esc(t.version)}</span>` : ""}</span>`).join("")}</div></td></tr>`).join("")}</tbody></table>` : `<div class="empty">No known libraries detected. Plain HTML/CSS, or everything is bundled.</div>`}
+      </div>
+      <div class="stack">
+        <div class="card"><h2>Fonts</h2><table class="tbl"><tbody>
+          <tr><th style="width:110px">Display</th><td>${esc((f.roles || {}).display || "-")}</td></tr>
+          <tr><th>Body</th><td>${esc((f.roles || {}).body || "-")}</td></tr>
+          <tr><th>Loaded</th><td>${esc((f.loaded || []).join(", ") || "-")}</td></tr></tbody></table></div>
+        <div class="card"><h2>Palette <span class="sub">theme: ${esc(p.theme || "unknown")}, ${esc(p.distinct_colors ?? 0)} colors, ${esc(p.custom_properties ?? 0)} custom properties</span></h2>
+          <div class="swatches" style="grid-template-columns:repeat(auto-fill,minmax(92px,1fr))">${(p.top_colors || []).map((c) => `<button class="swatch" type="button" data-copy="${esc(c)}"><div class="chip" style="background:${esc(c)};height:40px"></div><div class="meta"><span>${esc(c)}</span></div></button>`).join("")}</div>
+          ${(p.accent_candidates || []).length ? `<p style="margin:12px 0 0;font-size:13px;color:var(--muted)">Accent guess: ${p.accent_candidates.map((a) => `<span class="mono">${esc(a.hex)}</span> (${esc(a.hue)})`).join(", ")}</p>` : ""}</div>
+      </div></div>
+      <p style="color:var(--muted);font-size:13px;margin-top:12px">Observed: ${esc(r.observed)}. Not observed: ${esc(r.not_observed)}.</p>`;
+    $$("#dt-out .swatch").forEach((b) => b.addEventListener("click", () => copy(b.dataset.copy, `Copied ${b.dataset.copy}`)));
+  } catch (e) { out.innerHTML = errorBox(e); } finally { busy(btn, false); }
+}
+$("#dt-run").addEventListener("click", runDetect);
+$("#dt-target").addEventListener("keydown", (e) => { if (e.key === "Enter") runDetect(); });
+
+/* ---------- teardown ---------- */
+async function runTeardown() {
+  const btn = $("#td-run"), target = $("#td-target").value.trim(), out = $("#td-out");
+  if (!target) { out.innerHTML = errorBox("Enter a URL or an HTML file."); return; }
+  storeSet("target", target); busy(btn, true, "Drafting");
+  out.innerHTML = skeleton(`Reading sections of ${target}…`, "two");
+  try {
+    const d = await api("teardown", { target });
+    const secs = d.result.sections;
+    out.innerHTML = `<div class="grid-2" style="grid-template-columns:minmax(0,300px) minmax(0,1fr)">
+      <div class="card"><h2>${secs.length} sections</h2><ol class="plain" style="padding-left:20px">${secs.map((s) => `<li><b>${esc(s.name)}</b>${s.repeated ? ` <span class="pill plain">${s.repeated.count} ${esc(s.repeated.kind)}</span>` : ""}${s.motion_hooks.length ? ` <span class="pill info">motion</span>` : ""}</li>`).join("")}</ol></div>
+      <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">Brief</h2><div class="row"><button class="btn ghost small" id="td-copy">Copy</button><button class="btn small" id="td-dl">Download .md</button></div></div>
+      <pre class="code" style="max-height:640px;white-space:pre-wrap"></pre></div></div>`;
+    $("#td-out pre").textContent = d.text;
+    $("#td-copy").onclick = () => copy(d.text, "Brief copied");
+    $("#td-dl").onclick = () => download("teardown-brief.md", d.text, "text/markdown");
+  } catch (e) { out.innerHTML = errorBox(e); } finally { busy(btn, false); }
+}
+$("#td-run").addEventListener("click", runTeardown);
+$("#td-target").addEventListener("keydown", (e) => { if (e.key === "Enter") runTeardown(); });
+
+/* ---------- skills ---------- */
+function md(src) {
+  let lines = src.replace(/\r/g, "").split("\n"), i = 0, out = [];
+  if (lines[0] === "---") { const end = lines.indexOf("---", 1); if (end > 0) i = end + 1; }
+  const inline = (s) => esc(s)
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+  while (i < lines.length) {
+    const l = lines[i];
+    if (/^```/.test(l)) { const buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) buf.push(lines[i++]); i++; out.push(`<pre><code>${esc(buf.join("\n"))}</code></pre>`); continue; }
+    const h = l.match(/^(#{1,4})\s+(.*)$/); if (h) { const n = Math.min(h[1].length, 3); out.push(`<h${n}>${inline(h[2])}</h${n}>`); i++; continue; }
+    if (/^\s*\|/.test(l)) { const rows = []; while (i < lines.length && /^\s*\|/.test(lines[i])) rows.push(lines[i++]); const cells = (r) => r.trim().replace(/^\||\|$/g, "").split("|").map((c) => c.trim());
+      const body = rows.filter((r, k) => !(k === 1 && /^[\s|:-]+$/.test(r))); const [head, ...rest] = body;
+      out.push(`<table><thead><tr>${cells(head).map((c) => `<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${rest.map((r) => `<tr>${cells(r).map((c) => `<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`); continue; }
+    if (/^\s*([-*]|\d+\.)\s+/.test(l)) { const ordered = /^\s*\d+\./.test(l), items = [];
+      while (i < lines.length && (/^\s*([-*]|\d+\.)\s+/.test(lines[i]) || (/^\s{2,}\S/.test(lines[i]) && items.length))) {
+        if (/^\s*([-*]|\d+\.)\s+/.test(lines[i]) && !/^\s{3,}/.test(lines[i])) items.push(lines[i].replace(/^\s*([-*]|\d+\.)\s+/, ""));
+        else items[items.length - 1] += " " + lines[i].trim();
+        i++; }
+      out.push(`<${ordered ? "ol" : "ul"}>${items.map((x) => `<li>${inline(x)}</li>`).join("")}</${ordered ? "ol" : "ul"}>`); continue; }
+    if (!l.trim()) { i++; continue; }
+    const buf = []; while (i < lines.length && lines[i].trim() && !/^(```|#{1,4}\s|\s*\||\s*([-*]|\d+\.)\s)/.test(lines[i])) buf.push(lines[i++]);
+    out.push(`<p>${inline(buf.join(" "))}</p>`);
+  }
+  return out.join("\n");
+}
+async function openSkill(name, file) {
+  $$(".skill-item").forEach((b) => b.setAttribute("aria-current", String(b.dataset.name === name)));
+  try {
+    const d = await api("skill", { name, file });
+    $("#sk-body").innerHTML = d.file.endsWith(".md") ? md(d.text) : `<pre class="code">${esc(d.text)}</pre>`;
+    $("#sk-files").innerHTML = ["SKILL.md", ...d.files].map((f) => `<button class="btn ${f === d.file ? "" : "ghost"} small" data-file="${esc(f)}">${esc(f)}</button>`).join("") +
+      `<button class="btn ghost small" id="sk-copy" style="margin-left:auto">Copy</button>`;
+    $$("#sk-files [data-file]").forEach((b) => b.addEventListener("click", () => openSkill(name, b.dataset.file === "SKILL.md" ? undefined : b.dataset.file)));
+    $("#sk-copy").onclick = () => copy(d.text);
+    storeSet("skill", name);
+  } catch (e) { $("#sk-body").innerHTML = errorBox(e); }
+}
+
+/* ---------- install ---------- */
+const IN = { scope: "user" };
+function selectedAgents() { return $$("#in-agents input:checked").map((x) => x.value); }
+function selectedSkills() { const all = $$("#in-skills input"), on = all.filter((x) => x.checked); return on.length === all.length ? null : on.map((x) => x.value); }
+async function doInstall(dry) {
+  const btn = dry ? $("#in-preview") : $("#in-go"), box = $("#in-log");
+  const agents = selectedAgents();
+  if (!agents.length) { box.innerHTML = errorBox("Choose at least one agent."); return; }
+  if (!dry && !confirm(`Install the skills for ${agents.length} agent(s)? This writes files to disk.`)) return;
+  busy(btn, true, dry ? "Previewing" : "Installing");
+  try {
+    const d = await api("install", { agents, scope: IN.scope, project: $("#in-project").value.trim(), only: selectedSkills(), force: $("#in-force").checked, dry_run: dry });
+    box.innerHTML = `<p style="margin:0 0 10px">${d.dry_run ? `<span class="pill warn">Preview</span> Nothing was written.` : `<span class="pill ok">Installed</span> Restart the agent or start a new session.`}</p>` +
+      d.results.map((r) => `<div style="margin-bottom:10px"><b>${esc(r.label)}</b><pre class="code" style="margin-top:6px;white-space:pre-wrap">${esc(r.log.join("\n"))}</pre></div>`).join("");
+    if (!dry) refreshStatus();
+  } catch (e) { box.innerHTML = errorBox(e); } finally { busy(btn, false); }
+}
+async function refreshStatus() {
+  try {
+    const { rows } = await api("status", { project: $("#in-project").value.trim() });
+    $("#in-status").innerHTML = `<thead><tr><th>Agent</th><th>Scope</th><th>Skills</th><th>Path</th><th></th></tr></thead><tbody>${rows.map((r) => `<tr><td>${esc(r.agent)}</td><td>${esc(r.scope)}</td><td>${r.installed ? `<span class="pill ok">${r.installed}/${r.of}</span>` : `<span class="pill plain">none</span>`}</td><td class="mono" style="overflow-wrap:anywhere;font-size:12px">${esc(r.path)}</td><td>${r.installed ? `<button class="btn ghost small" data-un="${esc(r.agent)}" data-scope="${esc(r.scope)}">Remove</button>` : ""}</td></tr>`).join("")}</tbody>`;
+    $$("#in-status [data-un]").forEach((b) => b.addEventListener("click", async () => {
+      if (!confirm(`Remove webcraft skills for ${b.dataset.un} (${b.dataset.scope})?`)) return;
+      try { const d = await api("uninstall", { agent: b.dataset.un, scope: b.dataset.scope, project: $("#in-project").value.trim() }); toast(d.log[0] || "Removed"); refreshStatus(); }
+      catch (e) { toast(e.message); }
+    }));
+  } catch (e) { $("#in-status").innerHTML = `<tbody><tr><td>${errorBox(e)}</td></tr></tbody>`; }
+}
+async function showMcp() { try { const d = await api("mcp_config", { client: $("#mcp-client").value }); $("#mcp-out").textContent = d.text; } catch (e) { $("#mcp-out").textContent = e.message; } }
+$("#in-preview").addEventListener("click", () => doInstall(true));
+$("#in-go").addEventListener("click", () => doInstall(false));
+$("#in-refresh").addEventListener("click", refreshStatus);
+$("#in-project").addEventListener("change", refreshStatus);
+$$("#in-scope [data-scope]").forEach((b) => b.addEventListener("click", () => { IN.scope = b.dataset.scope; $$("#in-scope [data-scope]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
+$("#mcp-client").addEventListener("change", showMcp);
+$("#mcp-copy").addEventListener("click", () => copy($("#mcp-out").textContent));
+
+/* ---------- boot ---------- */
+(async function boot() {
+  try { META = await api("meta"); } catch (e) { $("main").insertAdjacentHTML("afterbegin", errorBox("Cannot reach the webcraft server: " + e.message + ". Is `webcraft ui` still running?")); return; }
+  $("#ver").textContent = "v" + META.version + " · running locally";
+  renderHelp();
+  $("#au-out").innerHTML = emptyState("No audit yet", "Enter a live URL or a local build folder above, or try the sample site. Live sites take 10 to 40 seconds.");
+  $("#dt-out").innerHTML = emptyState("Nothing detected yet", "Paste any website URL to see its CMS, framework, animation libraries, fonts and colors.");
+  $("#td-out").innerHTML = emptyState("No brief yet", "Paste a URL you admire. You get its structure as a placeholder brief, never its words or images.");
+  $("#pal-q").addEventListener("input", () => { PAL.sel = 0; renderPalette(); });
+  $("#pal-q").addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); PAL.sel = Math.min(PAL.sel + 1, PAL.items.length - 1); renderPalette(); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); PAL.sel = Math.max(PAL.sel - 1, 0); renderPalette(); }
+    else if (e.key === "Enter") { e.preventDefault(); runPalette(PAL.sel); }
+  });
+  $("#pal-list").addEventListener("click", (e) => { const li = e.target.closest(".pal-item"); if (li) runPalette(+li.dataset.i); });
+  $("#palette").addEventListener("click", (e) => { if (e.target.id === "palette") $("#palette").close(); });
+  loadOverview();
+  // tokens controls
+  $("#tk-tone").innerHTML = META.tones.map((t) => `<button data-tone="${esc(t)}" aria-pressed="${t === TK.tone}">${esc(t[0].toUpperCase() + t.slice(1))}</button>`).join("");
+  $$("#tk-tone [data-tone]").forEach((b) => b.addEventListener("click", () => { TK.tone = b.dataset.tone; $$("#tk-tone [data-tone]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); genTokens(); }));
+  $("#tk-radius").insertAdjacentHTML("beforeend", META.radii.map((r) => `<option value="${esc(r)}">${esc(r[0].toUpperCase() + r.slice(1))}</option>`).join(""));
+  const savedBrand = storeGet("brand", ""); if (savedBrand) $("#tk-brand").value = savedBrand;
+  genTokens(); runContrast();
+  // targets
+  const savedTarget = storeGet("target", "");
+  ["#au-target", "#dt-target", "#td-target"].forEach((s) => { if (savedTarget) $(s).value = savedTarget; });
+  const sample = META.sample_site;
+  [["#au-sample", "#au-target", runAudit, sample], ["#dt-sample", "#dt-target", runDetect, META.sample_index], ["#td-sample", "#td-target", runTeardown, META.sample_index]].forEach(([b, t, fn, val]) => {
+    if (!sample) { $(b).remove(); return; }
+    $(b).addEventListener("click", () => { $(t).value = val; fn(); });
+  });
+  // skills
+  $("#sk-list").innerHTML = META.skills.map((s) => `<button class="skill-item" data-name="${esc(s.name)}"><b>${esc(s.name)}</b><span>${esc(s.description)}</span></button>`).join("");
+  $$("#sk-list .skill-item").forEach((b) => b.addEventListener("click", () => openSkill(b.dataset.name)));
+  openSkill(storeGet("skill", "website-workflow"));
+  // install
+  $("#in-agents").innerHTML = META.agents.map((a) => `<label class="check" title="${esc(a.note)}"><input type="checkbox" value="${esc(a.key)}"${a.key === "claude" ? " checked" : ""}><span><b class="mono" style="font-size:13px">${esc(a.key)}</b> <span style="color:var(--muted);font-size:13px">${esc(a.label)}</span></span></label>`).join("");
+  $("#in-skills").innerHTML = META.skills.map((s) => `<label class="check"><input type="checkbox" value="${esc(s.name)}" checked><span class="mono" style="font-size:13px">${esc(s.name)}</span></label>`).join("");
+  $("#in-project").value = META.cwd;
+  $("#mcp-client").innerHTML = META.mcp_clients.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("");
+  showMcp();
+  // route, with optional auto-run: #audit?target=...&run=1
+  const { view, params } = parseHash();
+  show(view, params);
+  if (params.get("target")) { const map = { audit: ["#au-target", runAudit], detect: ["#dt-target", runDetect], teardown: ["#td-target", runTeardown] }; if (map[view]) { $(map[view][0]).value = params.get("target"); if (params.get("run") === "1") map[view][1](); } }
+  if (params.get("brand") && view === "tokens") { $("#tk-brand").value = params.get("brand"); genTokens(); }
+})();
+</script>
+</body>
+</html>

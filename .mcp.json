@@ -1,0 +1,5 @@
+{
+  "mcpServers": {
+    "webcraft": { "command": "webcraft", "args": ["mcp"] }
+  }
+}

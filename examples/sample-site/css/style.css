@@ -1,0 +1,13 @@
+:root { --bg: #ffffff; --text: #333333; --muted: #b0b0b0; --accent: #ff7a59; --on-accent: #ffffff; }
+body { background: var(--bg); color: var(--text); font-family: "Inter", sans-serif; }
+h1, h2 { font-family: "Playfair Display", serif; }
+.hero { min-height: 100vh; }
+.full { width: 100vw; }
+[data-aos] { opacity: 0; }
+.card { border-radius: 12px; color: #222; background: #fafafa; }
+.btn { border-radius: 6px; background: #ff7a59; color: #fff; }
+.btn-primary { border-radius: 30px; }
+.logo-item { border-radius: 3px; }
+input { border-radius: 4px; border: 1px solid #ddd; }
+details { border-radius: 20px; }
+@font-face { font-family: "Brand Sans"; src: url(brand.woff2) format("woff2"); }

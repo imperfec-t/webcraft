@@ -1,0 +1,8 @@
+{
+  "name": "webcraft",
+  "version": "0.1.0",
+  "description": "Website-design skills (homepage blueprint, hero, layout, motion, tokens, WordPress, launch QA, teardown) with an MCP server for contrast-checked tokens, launch audits and stack detection.",
+  "author": { "name": "webcraft contributors" },
+  "license": "MIT",
+  "keywords": ["web-design", "design-tokens", "accessibility", "seo", "gsap", "wordpress", "launch-qa"]
+}

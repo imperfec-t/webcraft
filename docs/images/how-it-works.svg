@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="ill" viewBox="0 0 1000 440" width="1000" height="440" role="img" aria-label="Diagram: you use the web UI or command line, your AI agent uses the MCP server and reads installed skills; all of them call the webcraft engine, which reads your website, the design library, prompts, and writes skills into agent folders">
+<title>How webcraft works</title>
+<style>
+.frame{fill:#f7f7f9}
+.f-surface{fill:#ffffff} .f-s2{fill:#f2f2f6} .f-s3{fill:#eaeaf0} .f-text{fill:#15151c} .f-muted{fill:#5c5c6c}
+.f-faint{fill:#85859a} .f-acc{fill:#5046e5} .f-softacc{fill:#eeedfd} .f-okbg{fill:#e4f5ec}
+.s-border{stroke:#d4d4de;stroke-width:1.2} .s-acc{stroke:#5046e5} .s-acc-line{stroke:#c9c6fa;stroke-width:1.5} .s-faint{stroke:#85859a} .dash{stroke-dasharray:6 5}
+.st-acc{stop-color:#5046e5} .st-pink{stop-color:#ec4899}
+.t-small{font:500 12.5px -apple-system,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;fill:#5c5c6c} .t-strong{font:650 15px -apple-system,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;fill:#15151c} .t-mono2{font:500 12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#4338ca}
+.t-col{font:700 11px -apple-system,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;letter-spacing:.14em;fill:#85859a} .t-chip{font:600 12.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#15151c} .t-tiny{font:500 11px -apple-system,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;fill:#85859a}
+@media (prefers-color-scheme: dark) {
+.frame{fill:#0e0e12}
+.f-surface{fill:#15151b} .f-s2{fill:#1c1c24} .f-s3{fill:#24242e} .f-text{fill:#ececf2} .f-muted{fill:#a3a3b5}
+.f-faint{fill:#747488} .f-acc{fill:#8d8cf8} .f-softacc{fill:#1e1d3b} .f-okbg{fill:#102a1e}
+.s-border{stroke:#33333f;stroke-width:1.2} .s-acc{stroke:#8d8cf8} .s-acc-line{stroke:#3b3a7a;stroke-width:1.5} .s-faint{stroke:#747488} .dash{stroke-dasharray:6 5}
+.st-acc{stop-color:#8d8cf8} .st-pink{stop-color:#ec4899}
+.t-small{font:500 12.5px -apple-system,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;fill:#a3a3b5} .t-strong{font:650 15px -apple-system,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;fill:#ececf2} .t-mono2{font:500 12px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#aaa9ff}
+.t-col{font:700 11px -apple-system,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;letter-spacing:.14em;fill:#747488} .t-chip{font:600 12.5px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;fill:#ececf2} .t-tiny{font:500 11px -apple-system,'Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif;fill:#747488}
+}
+</style>
+<rect class="frame" x="0" y="0" width="1000" height="440" rx="16"/>
+
+          <defs>
+            <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-acc"/></marker>
+            <marker id="arr-m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-faint"/></marker>
+          </defs>
+          <text x="105" y="22" text-anchor="middle" class="t-col">WHO</text>
+          <text x="340" y="22" text-anchor="middle" class="t-col">HOW</text>
+          <text x="615" y="22" text-anchor="middle" class="t-col">ENGINE</text>
+          <text x="890" y="22" text-anchor="middle" class="t-col">DATA</text>
+          <!-- who -->
+          <rect x="20" y="62" width="170" height="104" rx="14" class="f-s2 s-border"/>
+          <circle cx="54" cy="96" r="14" class="f-softacc"/><path d="M48 101a6 6 0 0 1 12 0M54 92a3.5 3.5 0 1 0 0-.1" class="s-acc" fill="none" stroke-width="2"/>
+          <text x="76" y="100" class="t-strong">You</text><text x="36" y="130" class="t-small">click in the browser</text><text x="36" y="148" class="t-small">or type in a terminal</text>
+          <rect x="20" y="248" width="170" height="122" rx="14" class="f-s2 s-border"/>
+          <circle cx="54" cy="282" r="14" fill="url(#g-acc2)"/><text x="76" y="287" class="t-strong">AI agent</text>
+          <text x="36" y="316" class="t-small">Claude Code, Codex,</text><text x="36" y="334" class="t-small">Gemini, Copilot, Cursor…</text><text x="36" y="352" class="t-small">builds what you ask</text>
+          <defs><linearGradient id="g-acc2" x1="0" x2="1"><stop offset="0" class="st-acc"/><stop offset="1" class="st-pink"/></linearGradient></defs>
+          <!-- how -->
+          <g class="t-box">
+            <rect x="250" y="40" width="180" height="66" rx="12" class="f-surface s-acc-line"/><text x="268" y="68" class="t-strong">Web UI</text><text x="268" y="88" class="t-mono2">webcraft ui</text>
+            <rect x="250" y="122" width="180" height="66" rx="12" class="f-surface s-acc-line"/><text x="268" y="150" class="t-strong">Command line</text><text x="268" y="170" class="t-mono2">webcraft audit …</text>
+            <rect x="250" y="240" width="180" height="66" rx="12" class="f-surface s-acc-line"/><text x="268" y="268" class="t-strong">MCP server</text><text x="268" y="288" class="t-mono2">webcraft mcp</text>
+            <rect x="250" y="322" width="180" height="66" rx="12" class="f-surface s-border dash"/><text x="268" y="350" class="t-strong">Skills</text><text x="268" y="370" class="t-mono2">SKILL.md × 10</text>
+          </g>
+          <path d="M190 100 C 220 100, 220 73, 248 73" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M190 128 C 220 128, 220 155, 248 155" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M190 290 C 220 290, 220 273, 248 273" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M248 355 C 220 355, 220 335, 192 335" class="s-faint" fill="none" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arr-m)"/>
+          <text x="105" y="392" text-anchor="middle" class="t-tiny">the agent reads the</text><text x="105" y="406" text-anchor="middle" class="t-tiny">skill that matches</text>
+          <!-- engine -->
+          <rect x="490" y="40" width="250" height="348" rx="16" class="f-softacc s-acc"/>
+          <text x="512" y="70" class="t-strong">webcraft engine</text><text x="512" y="89" class="t-small">Python · no dependencies</text>
+          <g class="chips">
+            <rect x="512" y="104" width="100" height="30" rx="8" class="f-surface s-border"/><text x="562" y="124" text-anchor="middle" class="t-chip">tokens</text>
+            <rect x="618" y="104" width="100" height="30" rx="8" class="f-surface s-border"/><text x="668" y="124" text-anchor="middle" class="t-chip">contrast</text>
+            <rect x="512" y="142" width="100" height="30" rx="8" class="f-surface s-border"/><text x="562" y="162" text-anchor="middle" class="t-chip">audit</text>
+            <rect x="618" y="142" width="100" height="30" rx="8" class="f-surface s-border"/><text x="668" y="162" text-anchor="middle" class="t-chip">detect</text>
+            <rect x="512" y="180" width="100" height="30" rx="8" class="f-surface s-border"/><text x="562" y="200" text-anchor="middle" class="t-chip">teardown</text>
+            <rect x="618" y="180" width="100" height="30" rx="8" class="f-surface s-border"/><text x="668" y="200" text-anchor="middle" class="t-chip">designs</text>
+            <rect x="512" y="218" width="100" height="30" rx="8" class="f-surface s-border"/><text x="562" y="238" text-anchor="middle" class="t-chip">prompts</text>
+            <rect x="618" y="218" width="100" height="30" rx="8" class="f-surface s-border"/><text x="668" y="238" text-anchor="middle" class="t-chip">installer</text>
+          </g>
+          <text x="512" y="282" class="t-small">Measures what an AI should</text><text x="512" y="300" class="t-small">not guess: contrast ratios,</text>
+          <text x="512" y="318" class="t-small">markup rules, fingerprints,</text><text x="512" y="336" class="t-small">file locations per agent.</text>
+          <path d="M432 73 C 460 73, 460 120, 488 120" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M432 155 C 460 155, 460 170, 488 170" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <path d="M432 273 C 460 273, 460 230, 488 230" class="s-acc" fill="none" stroke-width="2" marker-end="url(#arr)"/>
+          <!-- data -->
+          <rect x="800" y="40" width="180" height="70" rx="12" class="f-s2 s-border"/><text x="816" y="68" class="t-strong">Your website</text><text x="816" y="88" class="t-small">URL, file or folder</text>
+          <rect x="800" y="124" width="180" height="70" rx="12" class="f-s2 s-border"/><text x="816" y="152" class="t-strong">Design library</text><text x="816" y="172" class="t-small">84 DESIGN.md · GitHub</text>
+          <rect x="800" y="208" width="180" height="70" rx="12" class="f-s2 s-border"/><text x="816" y="236" class="t-strong">Prompts</text><text x="816" y="256" class="t-small">13 built-in + yours</text>
+          <rect x="800" y="292" width="180" height="70" rx="12" class="f-s2 s-border"/><text x="816" y="320" class="t-strong">Agent folders</text><text x="816" y="340" class="t-small">.claude · .agents · .cursor</text>
+          <path d="M742 110 L 798 76" class="s-faint" fill="none" stroke-width="2" marker-start="url(#arr-m)" marker-end="url(#arr-m)"/>
+          <path d="M742 170 L 798 160" class="s-faint" fill="none" stroke-width="2" marker-start="url(#arr-m)" marker-end="url(#arr-m)"/>
+          <path d="M742 232 L 798 242" class="s-faint" fill="none" stroke-width="2" marker-start="url(#arr-m)" marker-end="url(#arr-m)"/>
+          <path d="M742 300 L 798 324" class="s-faint" fill="none" stroke-width="2" marker-end="url(#arr-m)"/>
+          <path d="M890 362 C 890 410, 340 420, 340 392" class="s-faint" fill="none" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#arr-m)"/>
+          <text x="600" y="418" text-anchor="middle" class="t-tiny">the installer copies skills into each agent's folder</text>
+        </svg>

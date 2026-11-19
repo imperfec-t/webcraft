@@ -1,0 +1,9 @@
+{
+  "name": "webcraft",
+  "version": "0.1.0",
+  "description": "Website-design skills and checks: tokens, contrast, launch QA, stack detection, teardown briefs.",
+  "contextFileName": "GEMINI.md",
+  "mcpServers": {
+    "webcraft": { "command": "webcraft", "args": ["mcp"] }
+  }
+}

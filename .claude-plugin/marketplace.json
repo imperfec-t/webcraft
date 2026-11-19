@@ -1,0 +1,12 @@
+{
+  "name": "webcraft",
+  "owner": { "name": "webcraft contributors" },
+  "plugins": [
+    {
+      "name": "webcraft",
+      "source": "./",
+      "description": "Website-design skills and deterministic checks for Claude Code.",
+      "version": "0.1.0"
+    }
+  ]
+}
